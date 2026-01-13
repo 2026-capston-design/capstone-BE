@@ -1,6 +1,6 @@
-package backend.capstone.global.config;
+package backend.capstone.auth.config;
 
-import backend.capstone.global.service.CustomOAuth2UserService;
+import backend.capstone.auth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

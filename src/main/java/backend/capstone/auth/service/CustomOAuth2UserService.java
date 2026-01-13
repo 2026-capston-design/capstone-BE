@@ -1,10 +1,10 @@
-package backend.capstone.global.service;
+package backend.capstone.auth.service;
 
+import backend.capstone.auth.dto.UserPrincipal;
+import backend.capstone.auth.util.OAuthAttributes;
 import backend.capstone.domain.user.entity.User;
 import backend.capstone.domain.user.mapper.UserMapper;
 import backend.capstone.domain.user.repository.UserRepository;
-import backend.capstone.global.dto.UserPrincipal;
-import backend.capstone.global.util.OAuthAttributes;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;

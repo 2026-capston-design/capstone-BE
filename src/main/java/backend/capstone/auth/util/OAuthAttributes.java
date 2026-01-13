@@ -1,4 +1,4 @@
-package backend.capstone.global.util;
+package backend.capstone.auth.util;
 
 import backend.capstone.domain.user.entity.ProviderType;
 import java.util.Map;
