@@ -1,11 +1,3 @@
----
-name: 너의 여행은
-about: 너의 여행은 백엔드 이슈 템플릿
-title: "[YOURTRIP-BE]"
-labels: ''
-assignees: ''
----
-
 ## 📌 작업 설명
 <!-- 작업에 대해 설명해주세요-->
 
