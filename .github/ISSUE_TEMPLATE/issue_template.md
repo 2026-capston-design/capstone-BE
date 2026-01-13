@@ -1,6 +1,6 @@
 ---
-name: Feature
-about: 기능 개발 이슈
+name: new issue
+about: 이슈를 생성합니다
 title: ''
 labels: ''
 assignees: zie-ning
