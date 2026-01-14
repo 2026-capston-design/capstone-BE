@@ -16,10 +16,10 @@ public class KakaoApiClient {
 	private static final String USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
 	private final RequestBodyService requestBodyBuilder;
 
-	public KakaoUserInfoResponse getUserInfo(String accessToken) {
+	public KakaoUserInfoResponse getUserInfo(String kakaoAccessToken) {
 		return webClient.get()
 			.uri(USER_INFO_URI)
-			.header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+			.header(HttpHeaders.AUTHORIZATION, "Bearer " + kakaoAccessToken)
 			.retrieve()
 			// 카카오 토큰이 만료/위조면 여기서 401/403 등이 떨어짐
 			.onStatus(

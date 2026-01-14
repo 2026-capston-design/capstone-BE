@@ -1,7 +1,7 @@
 package backend.capstone.auth.service.dto;
 
 public record KakaoUserInfoResponse(
-	Long id,
+	String id,
 	KakaoAccount kakao_account
 ) {
 
