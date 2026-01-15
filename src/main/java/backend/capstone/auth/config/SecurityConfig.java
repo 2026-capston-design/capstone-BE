@@ -1,27 +1,32 @@
 package backend.capstone.auth.config;
 
+import backend.capstone.auth.jwt.filter.JwtAuthenticationFilter;
 import backend.capstone.auth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
 	private final CustomOAuth2UserService customOAuth2UserService;
+	private final JwtAuthenticationFilter jwtFilter;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http
-			// API 테스트 편하게 (추후 단계에서 상황 맞춰 조정)
 			.csrf(csrf -> csrf.disable())
+			.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.formLogin(fl -> fl.disable())
+			.httpBasic(hb -> hb.disable())
 
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/", "/oauth2/**", "/login/**").permitAll()
+				.requestMatchers("/", "/oauth2/**", "/login/**", "/api/auth/**").permitAll()
 				.anyRequest().authenticated()
 			)
 
@@ -30,11 +35,7 @@ public class SecurityConfig {
 				.defaultSuccessUrl("/", true)
 			)
 
-			// (선택) 기본 로그인 폼은 끄고 싶으면 주석 해제
-			// .formLogin(form -> form.disable())
-
-			// 기본 설정
-			.httpBasic(Customizer.withDefaults());
+			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
