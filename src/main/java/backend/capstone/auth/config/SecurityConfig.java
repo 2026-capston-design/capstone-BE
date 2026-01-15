@@ -21,12 +21,16 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) {
 		http
 			.csrf(csrf -> csrf.disable())
-			.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.formLogin(fl -> fl.disable())
 			.httpBasic(hb -> hb.disable())
 
+			.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/", "/oauth2/**", "/login/**", "/api/auth/**").permitAll()
+				.requestMatchers("/", "/oauth2/**", "/login/**", "/api/auth/**", "/swagger-ui/**",
+					"/swagger-ui.html",
+					"/v3/api-docs/**", "/webjars/**", "/swagger-resources/**", "/favicon.ico")
+				.permitAll()
 				.anyRequest().authenticated()
 			)
 

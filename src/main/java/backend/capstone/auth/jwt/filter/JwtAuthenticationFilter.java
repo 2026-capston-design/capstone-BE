@@ -10,11 +10,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
+@Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider tokenProvider;
@@ -36,6 +40,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			filterChain.doFilter(request, response);
 		}
+	}
+
+	@Override
+	protected boolean shouldNotFilter(HttpServletRequest request) {
+		String uri = request.getRequestURI();
+		return uri.startsWith("/swagger-ui")
+			|| uri.equals("/swagger-ui.html")
+			|| uri.startsWith("/v3/api-docs")
+			|| uri.startsWith("/webjars")
+			|| uri.startsWith("/swagger-resources")
+			|| uri.startsWith("/api/auth")
+			|| uri.startsWith("/oauth2")
+			|| uri.startsWith("/login")
+			|| uri.equals("/favicon.ico");
 	}
 
 	private String resolveBearerToken(HttpServletRequest request) {
