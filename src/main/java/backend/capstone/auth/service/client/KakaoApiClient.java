@@ -1,8 +1,8 @@
 package backend.capstone.auth.service.client;
 
+import backend.capstone.auth.exception.AuthErrorCode;
 import backend.capstone.auth.service.dto.KakaoUserInfoResponse;
 import backend.capstone.global.exception.BusinessException;
-import backend.capstone.global.exception.errorcode.AuthErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;

@@ -1,6 +1,5 @@
 package backend.capstone.global.exception;
 
-import backend.capstone.global.exception.errorcode.ErrorCode;
 import lombok.Getter;
 
 @Getter

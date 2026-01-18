@@ -1,4 +1,4 @@
-package backend.capstone.global.exception.errorcode;
+package backend.capstone.global.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -1,5 +1,6 @@
-package backend.capstone.global.exception.errorcode;
+package backend.capstone.auth.exception;
 
+import backend.capstone.global.exception.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
