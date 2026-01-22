@@ -8,7 +8,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 6379
+      port: 6379 #TODO: 환경변수로 변경
 
   jpa:
     hibernate:
