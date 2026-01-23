@@ -30,6 +30,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
+    @ResponseStatus(HttpStatus.CREATED)
     public TokenPair refresh(@RequestHeader(value = "X-Refresh-Token") String refreshToken) {
         return authService.refreshAccessToken(refreshToken);
     }
