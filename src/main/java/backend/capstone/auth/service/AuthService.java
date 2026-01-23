@@ -28,6 +28,8 @@ public class AuthService {
         User user = userService.upsertKakaoUser(kakaoUser);
         String accessToken = jwtTokenProvider.createAccessToken(user.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+        refreshTokenService.save(user.getId(), refreshToken);
+
         return new LoginResponse(user.getId(), user.getNickname(), user.getProfileImageUrl(),
             accessToken, refreshToken);
     }
@@ -44,6 +46,14 @@ public class AuthService {
         refreshTokenService.save(userId, newRefresh); //유저당 1개면 덮어쓰기
 
         return new TokenPair(newAccess, newRefresh);
+    }
+
+    @Transactional
+    public TokenPair testIssue() {
+        String refreshToken = jwtTokenProvider.createRefreshToken(1L);
+        refreshTokenService.save(1L, refreshToken);
+        return new TokenPair(jwtTokenProvider.createAccessToken(1L),
+            refreshToken);
     }
 
 

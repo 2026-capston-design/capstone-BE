@@ -35,8 +35,8 @@ public class AuthController {
     }
 
     @GetMapping("/test")
-    public String issueTestJwt() {
-        return jwtTokenProvider.createAccessToken(1L);
+    public TokenPair issueTestJwt() {
+        return authService.testIssue();
     }
 
 }
