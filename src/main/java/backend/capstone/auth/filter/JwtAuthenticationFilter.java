@@ -1,4 +1,4 @@
-package backend.capstone.auth.jwt.filter;
+package backend.capstone.auth.filter;
 
 import backend.capstone.auth.exception.AuthErrorCode;
 import backend.capstone.auth.jwt.TokenStatus;
