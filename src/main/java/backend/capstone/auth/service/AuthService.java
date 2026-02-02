@@ -10,6 +10,7 @@ import backend.capstone.auth.service.dto.KakaoUserInfoResponse;
 import backend.capstone.domain.user.entity.User;
 import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,30 @@ public class AuthService {
 
     @Transactional
     public TokenPair refreshAccessToken(String accessToken, String refreshToken) {
+        Long refreshUserId = validateRefreshToken(refreshToken);
+        Long accessUserId = validateAccessToken(accessToken);
+
+        if (!refreshUserId.equals(accessUserId)) {
+            throw new BusinessException(AuthErrorCode.TOKEN_USER_MISMATCH);
+        }
+
+        String newAccess = jwtTokenProvider.createAccessToken(refreshUserId);
+        String newRefresh = jwtTokenProvider.createRefreshToken(refreshUserId);
+
+        refreshTokenService.save(refreshUserId, newRefresh); //유저당 1개면 덮어쓰기
+
+        return new TokenPair(newAccess, newRefresh);
+    }
+
+    @Transactional
+    public TokenPair testIssue() {
+        String refreshToken = jwtTokenProvider.createRefreshToken(1L);
+        refreshTokenService.save(1L, refreshToken);
+        return new TokenPair(jwtTokenProvider.createAccessToken(1L),
+            refreshToken);
+    }
+
+    private Long validateRefreshToken(String refreshToken) {
         TokenStatus tokenStatus = tokenProvider.validateToken(refreshToken);
 
         if (tokenStatus != TokenStatus.VALID) {
@@ -49,20 +74,16 @@ public class AuthService {
         if (!refreshTokenService.validateRefreshToken(userId, refreshToken)) {
             throw new BusinessException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
-        String newAccess = jwtTokenProvider.createAccessToken(userId);
-        String newRefresh = jwtTokenProvider.createRefreshToken(userId);
-
-        refreshTokenService.save(userId, newRefresh); //유저당 1개면 덮어쓰기
-
-        return new TokenPair(newAccess, newRefresh);
+        return userId;
     }
 
-    @Transactional
-    public TokenPair testIssue() {
-        String refreshToken = jwtTokenProvider.createRefreshToken(1L);
-        refreshTokenService.save(1L, refreshToken);
-        return new TokenPair(jwtTokenProvider.createAccessToken(1L),
-            refreshToken);
+    private Long validateAccessToken(String accessToken) {
+        Claims claims = tokenProvider.parseClaimsAllowExpired(accessToken);
+        String tokenType = claims.get("token_type", String.class);
+        if (!tokenType.equals("ACCESS")) {
+            throw new BusinessException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+        }
+        return Long.parseLong(claims.getSubject());
     }
 
 

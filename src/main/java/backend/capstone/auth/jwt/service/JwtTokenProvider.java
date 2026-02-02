@@ -108,4 +108,19 @@ public class JwtTokenProvider {
             .getPayload();
     }
 
+    public Claims parseClaimsAllowExpired(String token) {
+        try {
+            return Jwts.parser()
+                .verifyWith((SecretKey) key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new BusinessException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+        }
+    }
+
 }
