@@ -4,6 +4,7 @@ import backend.capstone.auth.dto.KakaoLoginRequest;
 import backend.capstone.auth.dto.LoginResponse;
 import backend.capstone.auth.dto.TokenPair;
 import backend.capstone.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,14 +32,28 @@ public class AuthController implements AuthControllerSpec {
     @Override
     @PostMapping("/refresh")
     @ResponseStatus(HttpStatus.CREATED)
-    public TokenPair refresh(@RequestHeader(value = "X-Refresh-Token") String refreshToken) {
-        return authService.refreshAccessToken(refreshToken);
+    public TokenPair refresh(HttpServletRequest request,
+        @RequestHeader(value = "X-Refresh-Token") String refreshToken) {
+        String accessToken = resolveBearerToken(request);
+
+        return authService.refreshAccessToken(accessToken, refreshToken);
     }
 
     @Override
     @GetMapping("/test-issue")
     public TokenPair issueTestJwt() {
         return authService.testIssue();
+    }
+
+    private String resolveBearerToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header == null) {
+            return null;
+        }
+        if (!header.startsWith("Bearer ")) {
+            return null;
+        }
+        return header.substring(7);
     }
 
 }

@@ -3,6 +3,7 @@ package backend.capstone.auth.service;
 import backend.capstone.auth.dto.LoginResponse;
 import backend.capstone.auth.dto.TokenPair;
 import backend.capstone.auth.exception.AuthErrorCode;
+import backend.capstone.auth.jwt.TokenStatus;
 import backend.capstone.auth.jwt.service.JwtTokenProvider;
 import backend.capstone.auth.service.client.KakaoApiClient;
 import backend.capstone.auth.service.dto.KakaoUserInfoResponse;
@@ -21,6 +22,7 @@ public class AuthService {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final JwtTokenProvider tokenProvider;
 
     @Transactional
     public LoginResponse kakaoLogin(String kakaoAccessToken) {
@@ -35,8 +37,15 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenPair refreshAccessToken(String refreshToken) {
+    public TokenPair refreshAccessToken(String accessToken, String refreshToken) {
+        TokenStatus tokenStatus = tokenProvider.validateToken(refreshToken);
+
+        if (tokenStatus != TokenStatus.VALID) {
+            throw new BusinessException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
         Long userId = jwtTokenProvider.getUserIdFromRefreshToken(refreshToken);
+
         if (!refreshTokenService.validateRefreshToken(userId, refreshToken)) {
             throw new BusinessException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }

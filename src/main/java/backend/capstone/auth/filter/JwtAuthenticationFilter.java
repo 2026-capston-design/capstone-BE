@@ -49,7 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
 
-
         } else {
             SecurityContextHolder.clearContext();
             log.info("[JWT] 토큰 문제 발생: url={}, status={}", request.getRequestURI(), tokenStatus);
