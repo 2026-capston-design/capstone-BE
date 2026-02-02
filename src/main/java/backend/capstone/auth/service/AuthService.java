@@ -36,7 +36,7 @@ public class AuthService {
 
     @Transactional
     public TokenPair refreshAccessToken(String refreshToken) {
-        Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
+        Long userId = jwtTokenProvider.getUserIdFromRefreshToken(refreshToken);
         if (!refreshTokenService.validateRefreshToken(userId, refreshToken)) {
             throw new BusinessException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }

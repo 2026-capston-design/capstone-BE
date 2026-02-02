@@ -5,6 +5,7 @@ import backend.capstone.auth.jwt.TokenStatus;
 import backend.capstone.auth.jwt.service.JwtTokenProvider;
 import backend.capstone.domain.user.entity.User;
 import backend.capstone.domain.user.service.UserService;
+import backend.capstone.global.exception.BusinessException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,13 +35,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         TokenStatus tokenStatus = tokenProvider.validateToken(token);
 
         if (tokenStatus == TokenStatus.VALID) {
-            Long userId = tokenProvider.getUserIdFromToken(token);
-            User user = userService.findById(userId);
+            try {
+                Long userId = tokenProvider.getUserIdFromAccessToken(token);
+                User user = userService.findById(userId);
 
-            UsernamePasswordAuthenticationToken auth =
-                new UsernamePasswordAuthenticationToken(user, null, List.of());
+                UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(user, null, List.of());
 
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+            } catch (BusinessException e) {
+                if (e.getErrorCode() instanceof AuthErrorCode authErrorCode) {
+                    request.setAttribute("AUTH_ERROR_CODE", authErrorCode);
+                }
+            }
+
+
         } else {
             SecurityContextHolder.clearContext();
             log.info("[JWT] 토큰 문제 발생: url={}, status={}", request.getRequestURI(), tokenStatus);
