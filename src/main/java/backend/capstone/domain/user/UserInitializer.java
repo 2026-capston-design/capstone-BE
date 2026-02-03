@@ -14,17 +14,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserInitializer implements ApplicationRunner {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-	@Override
-	public void run(ApplicationArguments args) throws Exception {
-		User testUser1 = User.builder()
-			.nickname("테스트유저")
-			.profileImageUrl("https://example.com/profile1.jpg")
-			.provider(ProviderType.KAKAO)
-			.providerId("test_kakao_1")
-			.build();
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        User testUser1 = User.builder()
+            .nickname("테스트유저")
+            .provider(ProviderType.KAKAO)
+            .providerId("test_kakao_1")
+            .build();
 
-		userRepository.save(testUser1);
-	}
+        userRepository.save(testUser1);
+    }
 }
