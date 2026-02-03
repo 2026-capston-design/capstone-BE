@@ -2,7 +2,6 @@ package backend.capstone.auth.config;
 
 import backend.capstone.auth.entrypoint.ExAuthenticationEntryPoint;
 import backend.capstone.auth.filter.JwtAuthenticationFilter;
-import backend.capstone.auth.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +14,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final CustomOAuth2UserService customOAuth2UserService;
     private final JwtAuthenticationFilter jwtFilter;
     private final ExAuthenticationEntryPoint exAuthenticationEntryPoint;
 
@@ -29,7 +27,7 @@ public class SecurityConfig {
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/oauth2/**", "/login/**", "/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
 
                 .requestMatchers(
                     "/swagger-ui/**",
@@ -41,11 +39,6 @@ public class SecurityConfig {
 
             .exceptionHandling(
                 ex -> ex.authenticationEntryPoint(exAuthenticationEntryPoint)
-            )
-
-            .oauth2Login(oauth2 -> oauth2
-                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                .defaultSuccessUrl("/", true)
             )
 
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

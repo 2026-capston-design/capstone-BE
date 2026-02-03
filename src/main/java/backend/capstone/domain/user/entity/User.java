@@ -31,7 +31,7 @@ public class User {
     private String nickname;
 
     @Builder
-    public User(ProviderType provider, String providerId, String nickname, String profileImageUrl) {
+    public User(ProviderType provider, String providerId, String nickname) {
         this.provider = provider;
         this.providerId = providerId;
         this.nickname = nickname;
