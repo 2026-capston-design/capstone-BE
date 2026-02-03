@@ -1,8 +1,7 @@
 package backend.capstone.auth.config;
 
 import backend.capstone.auth.entrypoint.ExAuthenticationEntryPoint;
-import backend.capstone.auth.jwt.filter.JwtAuthenticationFilter;
-import backend.capstone.auth.service.CustomOAuth2UserService;
+import backend.capstone.auth.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,43 +14,37 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final CustomOAuth2UserService customOAuth2UserService;
-	private final JwtAuthenticationFilter jwtFilter;
-	private final ExAuthenticationEntryPoint exAuthenticationEntryPoint;
+    private final JwtAuthenticationFilter jwtFilter;
+    private final ExAuthenticationEntryPoint exAuthenticationEntryPoint;
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http
-			.csrf(csrf -> csrf.disable())
-			.formLogin(fl -> fl.disable())
-			.httpBasic(hb -> hb.disable())
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable())
+            .formLogin(fl -> fl.disable())
+            .httpBasic(hb -> hb.disable())
 
-			.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/", "/oauth2/**", "/login/**", "/api/auth/**").permitAll()
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll()
 
-				.requestMatchers(
-					"/swagger-ui/**",
-					"/swagger-ui.html",
-					"/v3/api-docs/**", "/webjars/**", "/swagger-resources/**", "/favicon.ico")
-				.permitAll()
-				.anyRequest().authenticated()
-			)
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**", "/webjars/**", "/swagger-resources/**", "/favicon.ico")
+                .permitAll()
+                .anyRequest().authenticated()
+            )
 
-			.exceptionHandling(
-				ex -> ex.authenticationEntryPoint(exAuthenticationEntryPoint)
-			)
+            .exceptionHandling(
+                ex -> ex.authenticationEntryPoint(exAuthenticationEntryPoint)
+            )
 
-			.oauth2Login(oauth2 -> oauth2
-				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-				.defaultSuccessUrl("/", true)
-			)
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-			.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
-		return http.build();
-	}
+        return http.build();
+    }
 
 
 }

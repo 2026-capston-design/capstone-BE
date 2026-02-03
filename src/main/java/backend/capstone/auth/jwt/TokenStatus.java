@@ -7,5 +7,6 @@ public enum TokenStatus {
     UNSUPPORTED,
     MALFORMED,
     INVALID_TOKEN,
-    MISSING_TOKEN
+    MISSING_TOKEN,
+    INVALID_TOKEN_TYPE
 }

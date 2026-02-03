@@ -5,6 +5,7 @@ import backend.capstone.auth.dto.LoginResponse;
 import backend.capstone.auth.dto.TokenPair;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Tag(name = "인증관련 API")
 public interface AuthControllerSpec {
@@ -32,7 +33,7 @@ public interface AuthControllerSpec {
             이 API의 응답으로 받은 엑세스 토큰과 리프레시 토큰을 사용해주세요. (그전에 저장한 엑세스 토큰과 리프레시 토큰은 폐지) 
             """
     )
-    TokenPair refresh(String refreshToken);
+    TokenPair refresh(HttpServletRequest request, String refreshToken);
 
     @Operation(
         summary = "테스트용 토큰 발급",

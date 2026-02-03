@@ -1,7 +1,10 @@
 package backend.capstone.auth.jwt.service;
 
+import backend.capstone.auth.exception.AuthErrorCode;
 import backend.capstone.auth.jwt.TokenStatus;
+import backend.capstone.auth.jwt.TokenType;
 import backend.capstone.auth.jwt.probs.JwtProperties;
+import backend.capstone.global.exception.BusinessException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -14,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Date;
+import javax.crypto.SecretKey;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -32,6 +36,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
             .subject(String.valueOf(userId))
+            .claim("token_type", TokenType.ACCESS.name())
             .issuedAt(Date.from(now))
             .expiration(Date.from(now.plusSeconds(props.accessExpSeconds())))
             .signWith(key)
@@ -43,6 +48,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
             .subject(String.valueOf(userId))
+            .claim("token_type", TokenType.REFRESH.name())
             .issuedAt(Date.from(now))
             .expiration(Date.from(now.plusSeconds(props.refreshExpSeconds())))
             .signWith(key)
@@ -74,18 +80,47 @@ public class JwtTokenProvider {
         }
     }
 
-    public Long getUserIdFromToken(String token) {
+    public Long getUserIdFromAccessToken(String token) {
         Claims claims = parseClaims(token);
+        String tokenType = claims.get("token_type", String.class);
+        if (!TokenType.ACCESS.name().equals(tokenType)) {
+            throw new BusinessException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+        }
         return Long.parseLong(claims.getSubject());
     }
+
+    public Long getUserIdFromRefreshToken(String token) {
+        Claims claims = parseClaims(token);
+        String tokenType = claims.get("token_type", String.class);
+        if (!TokenType.REFRESH.name().equals(tokenType)) {
+            throw new BusinessException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+        return Long.parseLong(claims.getSubject());
+    }
+
 
     //토큰 파싱
     private Claims parseClaims(String token) {
         return Jwts.parser()
-            .verifyWith((javax.crypto.SecretKey) key)
+            .verifyWith((SecretKey) key)
             .build()
             .parseSignedClaims(token)
             .getPayload();
+    }
+
+    public Claims parseClaimsAllowExpired(String token) {
+        try {
+            return Jwts.parser()
+                .verifyWith((SecretKey) key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new BusinessException(AuthErrorCode.INVALID_ACCESS_TOKEN);
+        }
     }
 
 }
