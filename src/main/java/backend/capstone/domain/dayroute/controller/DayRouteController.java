@@ -1,8 +1,8 @@
-package backend.capstone.domain.timeline.controller;
+package backend.capstone.domain.dayroute.controller;
 
-import backend.capstone.domain.timeline.dto.GpsPointBatchUploadRequest;
-import backend.capstone.domain.timeline.dto.GpsPointBatchUploadResponse;
-import backend.capstone.domain.timeline.gpspoint.service.GpsPointService;
+import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
+import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadResponse;
+import backend.capstone.domain.dayroute.gpspoint.service.GpsPointService;
 import backend.capstone.domain.user.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/timeline")
-public class TimeLineController {
+@RequestMapping("/api/day-route")
+public class DayRouteController {
 
     private final GpsPointService gpsPointService;
 

@@ -1,4 +1,4 @@
-package backend.capstone.domain.timeline.dto;
+package backend.capstone.domain.dayroute.dto;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

@@ -1,4 +1,4 @@
-package backend.capstone.domain.timeline.dto;
+package backend.capstone.domain.dayroute.dto;
 
 public record GpsPointBatchUploadResponse(
     String message
