@@ -13,6 +13,7 @@ import backend.capstone.domain.user.entity.User;
 import backend.capstone.global.exception.BusinessException;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +49,14 @@ public class DayRouteService {
     private DayRoute createDayRouteIfNotExists(User user, LocalDate date) {
         return dayRouteRepository.findByUserAndDate(user, date)
             .orElseGet(() -> {
-                DayRoute newDayRoute = DayRouteMapper.toEntity(user, date);
-                return dayRouteRepository.save(newDayRoute);
+                try {
+                    return dayRouteRepository.save(DayRouteMapper.toEntity(user, date));
+                } catch (DataIntegrityViolationException e) {
+                    // 다른 트랜잭션이 방금 만들어서 uk_user_date에 걸린 케이스
+                    return dayRouteRepository.findByUserAndDate(user, date)
+                        .orElseThrow(
+                            () -> new BusinessException(DayRouteErrorCode.DAY_ROUTE_CREATE_FAILED));
+                }
             });
     }
 
