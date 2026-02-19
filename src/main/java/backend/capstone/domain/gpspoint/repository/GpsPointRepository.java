@@ -3,6 +3,7 @@ package backend.capstone.domain.gpspoint.repository;
 import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.gpspoint.dto.GpsPointRecordedAtRange;
 import backend.capstone.domain.gpspoint.entity.GpsPoint;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,4 +20,12 @@ public interface GpsPointRepository extends
             where g.dayRoute = :dayRoute
         """)
     GpsPointRecordedAtRange findRecordedAtRange(@Param("dayRoute") DayRoute dayRoute);
+
+    @Query("""
+            select gp
+            from GpsPoint gp
+            where gp.dayRoute.id = :dayRouteId
+            order by gp.recordedAt asc
+        """)
+    List<GpsPoint> findByDayRouteIdOrderByRecordedAt(@Param("dayRouteId") Long dayRouteId);
 }

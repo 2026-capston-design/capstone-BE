@@ -4,6 +4,7 @@ import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest.GpsPointRequest;
 import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.gpspoint.dto.GpsPointRecordedAtRange;
+import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.gpspoint.repository.GpsPointRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,11 @@ public class GpsPointService {
     @Transactional(readOnly = true)
     public GpsPointRecordedAtRange getGpsPointRange(DayRoute dayRoute) {
         return gpsPointRepository.findRecordedAtRange(dayRoute);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GpsPoint> getGpsPointsByDayRouteId(Long dayRouteId) {
+        return gpsPointRepository.findByDayRouteIdOrderByRecordedAt(dayRouteId);
     }
 
 }

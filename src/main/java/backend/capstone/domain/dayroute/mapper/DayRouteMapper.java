@@ -2,8 +2,10 @@ package backend.capstone.domain.dayroute.mapper;
 
 import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
 import backend.capstone.domain.dayroute.entity.DayRoute;
+import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.user.entity.User;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -17,10 +19,11 @@ public class DayRouteMapper {
             .build();
     }
 
-    public static DayRouteDetailResponse toDayRouteDetailResponse(DayRoute dayRoute) {
+    public static DayRouteDetailResponse toDayRouteDetailResponse(DayRoute dayRoute,
+        List<GpsPoint> gpsPoints) {
         return new DayRouteDetailResponse(
             dayRoute.getDate(),
-            dayRoute.getGpsPoints().stream()
+            gpsPoints.stream()
                 .map(gp -> new DayRouteDetailResponse.GpsPointListResponse(
                     gp.getRecordedAt(),
                     gp.getLatitude(),
