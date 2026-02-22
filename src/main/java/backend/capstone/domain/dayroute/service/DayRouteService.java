@@ -11,6 +11,7 @@ import backend.capstone.domain.gpspoint.dto.GpsPointRecordedAtRange;
 import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.gpspoint.service.GpsPointService;
 import backend.capstone.domain.user.entity.User;
+import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,11 +26,13 @@ public class DayRouteService {
 
     private final DayRouteRepository dayRouteRepository;
     private final GpsPointService gpsPointService;
+    private final UserService userService;
 
     //TODO: 업로드 실패 예외처리 필요
     @Transactional
-    public GpsPointBatchUploadResponse uploadGpsPoint(User user,
+    public GpsPointBatchUploadResponse uploadGpsPoint(Long userId,
         GpsPointBatchUploadRequest request) {
+        User user = userService.findById(userId);
         DayRoute dayRoute = createDayRouteIfNotExists(user, request.date());
         gpsPointService.batchInsert(dayRoute.getId(), request);
 
@@ -41,8 +44,8 @@ public class DayRouteService {
     }
 
     @Transactional(readOnly = true)
-    public DayRouteDetailResponse getDayRouteDetail(Long dayRouteId, User user) {
-        DayRoute dayRoute = dayRouteRepository.findByIdAndUser(dayRouteId, user)
+    public DayRouteDetailResponse getDayRouteDetail(Long dayRouteId, Long userId) {
+        DayRoute dayRoute = dayRouteRepository.findByIdAndUser(dayRouteId, userId)
             .orElseThrow(() -> new BusinessException(DayRouteErrorCode.CANNOT_ACCESS_DAY_ROUTE));
 
         List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRouteId);
