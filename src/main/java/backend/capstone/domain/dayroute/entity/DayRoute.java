@@ -50,12 +50,14 @@ public class DayRoute {
 
     private double totalDistance;
 
+    private String title;
+
     @Column(columnDefinition = "TEXT")
     private String memo;
 
     private boolean deleted;
 
-    private boolean bookmarked;
+    private boolean isBookmarked;
 
     @OneToMany(mappedBy = "dayRoute")
     private List<GpsPoint> gpsPoints;

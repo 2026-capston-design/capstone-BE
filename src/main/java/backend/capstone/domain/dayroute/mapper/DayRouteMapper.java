@@ -21,15 +21,18 @@ public class DayRouteMapper {
 
     public static DayRouteDetailResponse toDayRouteDetailResponse(DayRoute dayRoute,
         List<GpsPoint> gpsPoints) {
-        return new DayRouteDetailResponse(
-            dayRoute.getDate(),
-            gpsPoints.stream()
+
+        return DayRouteDetailResponse.builder()
+            .date(dayRoute.getDate())
+            .totalDistance(dayRoute.getTotalDistance())
+            .isBookmarked(dayRoute.isBookmarked())
+            .gpsPoints(gpsPoints.stream()
                 .map(gp -> new DayRouteDetailResponse.GpsPointListResponse(
                     gp.getRecordedAt(),
                     gp.getLatitude(),
                     gp.getLongitude()
                 ))
-                .toList()
-        );
+                .toList())
+            .build();
     }
 }
