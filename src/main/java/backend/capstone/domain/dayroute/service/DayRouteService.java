@@ -8,13 +8,11 @@ import backend.capstone.domain.dayroute.exception.DayRouteErrorCode;
 import backend.capstone.domain.dayroute.mapper.DayRouteMapper;
 import backend.capstone.domain.dayroute.repository.DayRouteRepository;
 import backend.capstone.domain.gpspoint.dto.GpsPointRecordedAtRange;
-import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.gpspoint.service.GpsPointService;
 import backend.capstone.domain.user.entity.User;
 import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -45,12 +43,14 @@ public class DayRouteService {
 
     @Transactional(readOnly = true)
     public DayRouteDetailResponse getDayRouteDetail(Long dayRouteId, Long userId) {
-        DayRoute dayRoute = dayRouteRepository.findByIdAndUser(dayRouteId, userId)
+//        DayRoute dayRoute = dayRouteRepository.findByIdAndUser(dayRouteId, userId)
+//            .orElseThrow(() -> new BusinessException(DayRouteErrorCode.CANNOT_ACCESS_DAY_ROUTE));
+
+//        List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRouteId);
+        DayRoute dayRoute = dayRouteRepository.findByIdAndUserWithGpsPoints(dayRouteId, userId)
             .orElseThrow(() -> new BusinessException(DayRouteErrorCode.CANNOT_ACCESS_DAY_ROUTE));
 
-        List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRouteId);
-
-        return DayRouteMapper.toDayRouteDetailResponse(dayRoute, gpsPoints);
+        return DayRouteMapper.toDayRouteDetailResponse(dayRoute, dayRoute.getGpsPoints());
     }
 
     private DayRoute createDayRouteIfNotExists(User user, LocalDate date) {

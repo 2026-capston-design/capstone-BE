@@ -20,4 +20,14 @@ public interface DayRouteRepository extends JpaRepository<DayRoute, Long> {
         """)
     Optional<DayRoute> findByIdAndUser(@Param("dayRouteId") Long DayRouteId,
         @Param("userId") Long userId);
+
+    @Query("""
+            select distinct dr
+            from DayRoute dr
+            left join fetch dr.gpsPoints gp
+            where dr.id = :dayRouteId
+                and dr.user.id = :userId
+        """)
+    Optional<DayRoute> findByIdAndUserWithGpsPoints(@Param("dayRouteId") Long DayRouteId,
+        @Param("userId") Long userId);
 }
