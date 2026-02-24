@@ -24,10 +24,9 @@ public class DayRouteController {
 
     @PostMapping("/gps-points/upload")
     public GpsPointBatchUploadResponse uploadGpsPoints(
-        @Valid @RequestBody GpsPointBatchUploadRequest request,
-        @AuthenticationPrincipal UserPrincipal principal
+        @Valid @RequestBody GpsPointBatchUploadRequest request
     ) {
-        return dayRouteService.uploadGpsPoint(principal.userId(), request);
+        return dayRouteService.uploadGpsPoint(request.userId(), request);
     }
 
     @GetMapping("/{dayRouteId}/gps-points")

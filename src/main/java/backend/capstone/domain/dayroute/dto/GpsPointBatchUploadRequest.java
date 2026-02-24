@@ -8,6 +8,7 @@ import java.util.List;
 
 public record GpsPointBatchUploadRequest(
 //    String deviceId,
+    Long userId,
     LocalDate date,
     List<GpsPointRequest> gpsPoints
 ) {

@@ -29,6 +29,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
 
+                .requestMatchers("/api/day-routes/gps-points/upload").permitAll()
+
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/swagger-ui.html",
