@@ -2,6 +2,7 @@ package backend.capstone.global.exception;
 
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -10,23 +11,38 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	@ExceptionHandler(BusinessException.class)
-	public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException e) {
-		log.warn("BusinessException 발생: {}", e.getErrorCode());
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException e) {
+        log.warn("BusinessException 발생: {}", e.getErrorCode());
 
-		ErrorCode errorCode = e.getErrorCode();
+        ErrorCode errorCode = e.getErrorCode();
 
-		String code = (errorCode instanceof Enum)
-			? ((Enum<?>) errorCode).name()
-			: errorCode.getClass().getSimpleName();
+        String code = (errorCode instanceof Enum)
+            ? ((Enum<?>) errorCode).name()
+            : errorCode.getClass().getSimpleName();
 
-		return ResponseEntity
-			.status(e.getErrorCode().getStatus())
-			.body(Map.of(
-				"code", code,
-				"message", e.getMessage()
-			));
-	}
+        return ResponseEntity
+            .status(e.getErrorCode().getStatus())
+            .body(Map.of(
+                "code", code,
+                "message", e.getMessage()
+            ));
+    }
+
+    @ExceptionHandler({
+        CannotAcquireLockException.class
+    })
+    public ResponseEntity<Map<String, Object>> handleDbLock(RuntimeException e) {
+
+        Map<String, Object> body;
+        body = Map.of(
+            "code", "DB_LOCK_RETRY_FAILED",
+            "exception", e.getClass().getName(),
+            "message", String.valueOf(e.getMessage())
+        );
+
+        return ResponseEntity.status(503).body(body);
+    }
 
 
 }

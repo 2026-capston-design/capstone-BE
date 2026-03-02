@@ -24,7 +24,7 @@ public class GpsPointService {
 
         //batch insert
         String sql = """
-                INSERT INTO gps_point(day_route_id, latitude, longitude, recorded_at)
+                INSERT IGNORE INTO gps_point(day_route_id, latitude, longitude, recorded_at)
                 VALUES (?, ?, ?, ?)
             """;
 
