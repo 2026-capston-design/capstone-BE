@@ -1,8 +1,8 @@
 package backend.capstone.domain.place.service;
 
 import backend.capstone.domain.dayroute.entity.DayRoute;
-import backend.capstone.domain.place.dto.PlaceUploadRequest;
-import backend.capstone.domain.place.dto.PlaceUploadResponse;
+import backend.capstone.domain.place.dto.PlaceAddRequest;
+import backend.capstone.domain.place.dto.PlaceAddResponse;
 import backend.capstone.domain.place.entity.Place;
 import backend.capstone.domain.place.mapper.PlaceMapper;
 import backend.capstone.domain.place.repository.PlaceRepository;
@@ -17,7 +17,7 @@ public class PlaceService {
     private final PlaceRepository placeRepository;
 
     @Transactional
-    public PlaceUploadResponse uploadPlace(DayRoute dayRoute, PlaceUploadRequest request) {
+    public PlaceAddResponse addPlace(DayRoute dayRoute, PlaceAddRequest request) {
         int maxOrder = placeRepository.findMaxOrderIdxByRoute(dayRoute);
         int newOrder = maxOrder + 1;
 

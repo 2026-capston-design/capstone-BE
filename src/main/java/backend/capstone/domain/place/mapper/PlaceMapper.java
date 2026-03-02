@@ -1,15 +1,15 @@
 package backend.capstone.domain.place.mapper;
 
 import backend.capstone.domain.dayroute.entity.DayRoute;
-import backend.capstone.domain.place.dto.PlaceUploadRequest;
-import backend.capstone.domain.place.dto.PlaceUploadResponse;
+import backend.capstone.domain.place.dto.PlaceAddRequest;
+import backend.capstone.domain.place.dto.PlaceAddResponse;
 import backend.capstone.domain.place.entity.Place;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 public class PlaceMapper {
 
-    public static Place toEntity(DayRoute dayRoute, PlaceUploadRequest request, int orderIndex) {
+    public static Place toEntity(DayRoute dayRoute, PlaceAddRequest request, int orderIndex) {
         return Place.builder()
             .dayRoute(dayRoute)
             .roadAddress(request.roadAddress())
@@ -18,8 +18,8 @@ public class PlaceMapper {
             .build();
     }
 
-    public static PlaceUploadResponse toPlaceUploadResponse(Place place) {
-        return PlaceUploadResponse.builder()
+    public static PlaceAddResponse toPlaceUploadResponse(Place place) {
+        return PlaceAddResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
             .roadAddress(place.getRoadAddress())
