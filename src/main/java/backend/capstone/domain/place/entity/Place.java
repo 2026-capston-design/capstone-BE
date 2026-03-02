@@ -9,8 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class Place {
 
     @Id
@@ -27,5 +32,13 @@ public class Place {
     private String name;
 
     private int orderIndex;
+
+    @Builder
+    Place(DayRoute dayRoute, String roadAddress, String name, int orderIndex) {
+        this.dayRoute = dayRoute;
+        this.roadAddress = roadAddress;
+        this.name = name;
+        this.orderIndex = orderIndex;
+    }
 
 }

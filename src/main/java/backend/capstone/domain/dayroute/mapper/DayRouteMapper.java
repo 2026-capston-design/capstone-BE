@@ -23,6 +23,7 @@ public class DayRouteMapper {
         List<GpsPoint> gpsPoints) {
 
         return DayRouteDetailResponse.builder()
+            .dayRouteId(dayRoute.getId())
             .date(dayRoute.getDate())
             .totalDistance(dayRoute.getTotalDistance())
             .isBookmarked(dayRoute.isBookmarked())

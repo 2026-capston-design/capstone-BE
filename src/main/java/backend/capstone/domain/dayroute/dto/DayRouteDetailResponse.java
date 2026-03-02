@@ -8,6 +8,7 @@ import lombok.Builder;
 //TODO: 장소, 메모 추가
 @Builder
 public record DayRouteDetailResponse(
+    Long dayRouteId,
     LocalDate date,
     double totalDistance,
     boolean isBookmarked,
