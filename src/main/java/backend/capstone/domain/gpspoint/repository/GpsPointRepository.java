@@ -24,8 +24,8 @@ public interface GpsPointRepository extends
     @Query("""
             select gp
             from GpsPoint gp
-            where gp.dayRoute.id = :dayRouteId
+            where gp.dayRoute = :dayRoute
             order by gp.recordedAt asc
         """)
-    List<GpsPoint> findByDayRouteIdOrderByRecordedAt(@Param("dayRouteId") Long dayRouteId);
+    List<GpsPoint> findByDayRouteIdOrderByRecordedAt(@Param("dayRoute") DayRoute dayRoute);
 }

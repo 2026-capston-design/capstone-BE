@@ -45,8 +45,8 @@ public class GpsPointService {
     }
 
     @Transactional(readOnly = true)
-    public List<GpsPoint> getGpsPointsByDayRouteId(Long dayRouteId) {
-        return gpsPointRepository.findByDayRouteIdOrderByRecordedAt(dayRouteId);
+    public List<GpsPoint> getGpsPointsByDayRouteId(DayRoute dayRoute) {
+        return gpsPointRepository.findByDayRouteIdOrderByRecordedAt(dayRoute);
     }
 
 }

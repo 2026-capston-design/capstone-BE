@@ -15,7 +15,6 @@ import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
 import backend.capstone.domain.place.entity.Place;
 import backend.capstone.domain.place.service.PlaceService;
-import backend.capstone.domain.user.entity.User;
 import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
 import java.time.LocalDate;
@@ -48,8 +47,7 @@ public class DayRouteService {
     @Transactional
     public GpsPointBatchUploadResponse uploadGpsPoint(LocalDate date, Long userId,
         GpsPointBatchUploadRequest request) {
-        User user = userService.findById(userId);
-        DayRoute dayRoute = createDayRouteIfNotExists(user, date);
+        DayRoute dayRoute = createDayRouteIfNotExists(userId, date);
         gpsPointService.batchInsert(dayRoute.getId(), request);
 
         // 업로드된 좌표의 시간 범위로 DayRoute 시간 업데이트
@@ -61,19 +59,15 @@ public class DayRouteService {
 
     @Transactional(readOnly = true)
     public GpsPointsResponse getGpsPoints(LocalDate date, Long userId) {
-        User user = userService.findById(userId);
-        DayRoute dayRoute = getDayRouteByDateAndUser(date, user);
-
-        List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRoute.getId());
+        DayRoute dayRoute = getDayRouteByDateAndUserId(date, userId);
+        List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRoute);
 
         return DayRouteMapper.toGpsPointsResponse(gpsPoints);
     }
 
     @Transactional(readOnly = true)
     public DayRouteDetailResponse getDayRouteDetail(LocalDate date, Long userId) {
-        User user = userService.findById(userId);
-
-        DayRoute dayRoute = getDayRouteByDateAndUser(date, user);
+        DayRoute dayRoute = getDayRouteByDateAndUserId(date, userId);
         List<Place> places = placeService.getPlacesByDayRoute(dayRoute);
 
         return DayRouteMapper.toDayRouteDetailResponse(dayRoute, places);
@@ -82,26 +76,26 @@ public class DayRouteService {
     @Transactional
     public PlaceAddResponse addPlaceToDayRoute(LocalDate date, Long userId,
         PlaceAddRequest request) {
-        User user = userService.findById(userId);
-        DayRoute dayRoute = createDayRouteIfNotExists(user, date);
+        DayRoute dayRoute = createDayRouteIfNotExists(userId, date);
 
         return placeService.addPlace(dayRoute, request);
     }
 
-    private DayRoute getDayRouteByDateAndUser(LocalDate date, User user) {
-        return dayRouteRepository.findByUserAndDate(user, date)
+    private DayRoute getDayRouteByDateAndUserId(LocalDate date, Long userId) {
+        return dayRouteRepository.findByUserIdAndDate(userId, date)
             .orElseThrow(() -> new BusinessException(DayRouteErrorCode.DAY_ROUTE_NOT_FOUND));
     }
 
 
-    private DayRoute createDayRouteIfNotExists(User user, LocalDate date) {
-        return dayRouteRepository.findByUserAndDate(user, date)
+    private DayRoute createDayRouteIfNotExists(Long userId, LocalDate date) {
+        return dayRouteRepository.findByUserIdAndDate(userId, date)
             .orElseGet(() -> {
                 try {
-                    return dayRouteRepository.save(DayRouteMapper.toEntity(user, date));
+                    return dayRouteRepository.save(
+                        DayRouteMapper.toEntity(userService.findById(userId), date));
                 } catch (DataIntegrityViolationException e) {
                     // 다른 트랜잭션이 방금 만들어서 uk_user_date에 걸린 케이스
-                    return dayRouteRepository.findByUserAndDate(user, date)
+                    return dayRouteRepository.findByUserIdAndDate(userId, date)
                         .orElseThrow(
                             () -> new BusinessException(DayRouteErrorCode.DAY_ROUTE_CREATE_FAILED));
                 }
