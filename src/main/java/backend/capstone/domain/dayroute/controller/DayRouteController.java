@@ -5,7 +5,10 @@ import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadResponse;
 import backend.capstone.domain.dayroute.service.DayRouteService;
+import backend.capstone.domain.place.dto.PlaceAddRequest;
+import backend.capstone.domain.place.dto.PlaceAddResponse;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,4 +40,14 @@ public class DayRouteController {
     ) {
         return dayRouteService.getDayRouteDetail(dayRouteId, principal.userId());
     }
+
+    @PostMapping("/{date}/places")
+    public PlaceAddResponse addPlaceToDayRoute(
+        @PathVariable LocalDate date,
+        @AuthenticationPrincipal UserPrincipal principal,
+        @RequestBody PlaceAddRequest request
+    ) {
+        return dayRouteService.addPlaceToDayRoute(date, principal.userId(), request);
+    }
+
 }

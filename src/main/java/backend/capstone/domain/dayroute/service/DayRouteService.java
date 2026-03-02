@@ -10,6 +10,9 @@ import backend.capstone.domain.dayroute.repository.DayRouteRepository;
 import backend.capstone.domain.gpspoint.dto.GpsPointRecordedAtRange;
 import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.gpspoint.service.GpsPointService;
+import backend.capstone.domain.place.dto.PlaceAddRequest;
+import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.service.PlaceService;
 import backend.capstone.domain.user.entity.User;
 import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
@@ -31,6 +34,7 @@ public class DayRouteService {
     private final DayRouteRepository dayRouteRepository;
     private final GpsPointService gpsPointService;
     private final UserService userService;
+    private final PlaceService placeService;
 
     @Retryable(
         retryFor = {
@@ -61,6 +65,15 @@ public class DayRouteService {
         List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRouteId);
 
         return DayRouteMapper.toDayRouteDetailResponse(dayRoute, gpsPoints);
+    }
+
+    @Transactional
+    public PlaceAddResponse addPlaceToDayRoute(LocalDate date, Long userId,
+        PlaceAddRequest request) {
+        User user = userService.findById(userId);
+        DayRoute dayRoute = createDayRouteIfNotExists(user, date);
+
+        return placeService.addPlace(dayRoute, request);
     }
 
     private DayRoute createDayRouteIfNotExists(User user, LocalDate date) {
