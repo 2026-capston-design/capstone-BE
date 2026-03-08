@@ -1,23 +1,25 @@
 package backend.capstone.domain.dayroute.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 
-//TODO: 장소, 메모 추가
 @Builder
 public record DayRouteDetailResponse(
     LocalDate date,
     double totalDistance,
+    String title,
+    String memo,
     boolean isBookmarked,
-    List<GpsPointListResponse> gpsPoints
+    List<PlaceItem> places
 ) {
 
-    public record GpsPointListResponse(
-        LocalDateTime recordedAt,
-        double latitude,
-        double longitude
+    @Builder
+    public record PlaceItem(
+        Long placeId,
+        String placeName,
+        String roadAddress,
+        int orderIndex
     ) {
 
     }
