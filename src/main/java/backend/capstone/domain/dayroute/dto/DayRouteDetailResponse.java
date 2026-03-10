@@ -11,6 +11,8 @@ public record DayRouteDetailResponse(
     String title,
     String memo,
     boolean isBookmarked,
+    String encodedPath,
+    Integer pathPointCount,
     List<PlaceItem> places
 ) {
 
