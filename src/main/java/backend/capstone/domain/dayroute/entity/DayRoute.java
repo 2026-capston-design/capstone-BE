@@ -62,6 +62,11 @@ public class DayRoute {
     @OneToMany(mappedBy = "dayRoute")
     private List<GpsPoint> gpsPoints;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String encodedPath;
+
+    private Integer pathPointCount;
+
     @Builder
     public DayRoute(User user, LocalDate date) {
         this.user = user;
@@ -72,5 +77,10 @@ public class DayRoute {
     public void updateTime(LocalDateTime startTime, LocalDateTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
+    }
+
+    public void updateEncodedPath(String encodedPath, int pathPointCount) {
+        this.encodedPath = encodedPath;
+        this.pathPointCount = pathPointCount;
     }
 }

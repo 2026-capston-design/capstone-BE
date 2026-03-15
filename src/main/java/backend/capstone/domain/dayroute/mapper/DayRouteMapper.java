@@ -41,6 +41,8 @@ public class DayRouteMapper {
             .title(dayRoute.getTitle())
             .memo(dayRoute.getMemo())
             .isBookmarked(dayRoute.isBookmarked())
+            .encodedPath(dayRoute.getEncodedPath())
+            .pathPointCount(dayRoute.getPathPointCount())
             .places(places.stream()
                 .map(p -> DayRouteDetailResponse.PlaceItem.builder()
                     .placeId(p.getId())
