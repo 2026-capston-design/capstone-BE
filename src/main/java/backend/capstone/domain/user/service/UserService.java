@@ -21,7 +21,8 @@ public class UserService {
     public User upsertKakaoUser(KakaoUserInfoResponse kakaoUser) {
         return userRepository.findByProviderAndProviderId(ProviderType.KAKAO, kakaoUser.id())
             .map(existing -> {
-                existing.updateProfile(kakaoUser.kakao_account().profile().nickname());
+                existing.updateProfile(kakaoUser.kakao_account().profile().nickname(),
+                    kakaoUser.kakao_account().profile().profile_image_url());
                 return existing;
             })
             .orElseGet(() -> userRepository.save(

@@ -32,16 +32,22 @@ public class User {
 
     private String nickname;
 
+    private String profileImageUrl;
+
     @Builder
-    public User(ProviderType provider, String providerId, String nickname) {
+    public User(ProviderType provider, String providerId, String nickname, String profileImageUrl) {
         this.provider = provider;
         this.providerId = providerId;
         this.nickname = nickname;
+        this.profileImageUrl = profileImageUrl;
     }
 
-    public void updateProfile(String nickname) {
+    public void updateProfile(String nickname, String profileImageUrl) {
         if (!Objects.equals(this.nickname, nickname)) {
             this.nickname = nickname;
+        }
+        if (!Objects.equals(this.profileImageUrl, profileImageUrl)) {
+            this.profileImageUrl = profileImageUrl;
         }
     }
 }
