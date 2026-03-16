@@ -4,13 +4,17 @@ import backend.capstone.auth.dto.UserPrincipal;
 import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadResponse;
-import backend.capstone.domain.dayroute.dto.GpsPointsResponse;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 
@@ -27,19 +31,19 @@ public interface DayRouteControllerSpec {
         UserPrincipal principal
     );
 
-    @Operation(
-        summary = "좌표 목록 조회 API",
-        description = """
-            해당 일차의 좌표 목록을 조회합니다.
-            """
-    )
-    GpsPointsResponse getGpsPoints(
-        @Parameter(example = "2026-01-01") LocalDate date,
-        UserPrincipal principal
-    );
+//    @Operation(
+//        summary = "좌표 목록 조회 API",
+//        description = """
+//            해당 일차의 좌표 목록을 조회합니다.
+//            """
+//    )
+//    GpsPointsResponse getGpsPoints(
+//        @Parameter(example = "2026-01-01") LocalDate date,
+//        UserPrincipal principal
+//    );
 
     @Operation(
-        summary = "좌표를 제외한 해당 일차의 데이터 조회 API",
+        summary = "해당 일차 조회 API",
         description = "place의 orderIndex는 장소들의 순서이며 이 순서대로 오름차순 정렬해서 데이터가 반환됩니다."
     )
     DayRouteDetailResponse getDayRouteDetail(
@@ -69,5 +73,36 @@ public interface DayRouteControllerSpec {
         PlaceUpdateRequest request
     );
 
+    @Operation(
+        summary = "장소 삭제 API"
+    )
+    void deletePlace(
+        @Parameter(example = "2026-01-01") LocalDate date,
+        @Parameter(example = "1") Long placeId,
+        UserPrincipal principal
+    );
+
+    @Operation(
+        summary = "장소 순서 재정렬 API",
+        description = """
+            재정렬된 placeId 배열 전체를 받아 해당 날짜의 장소 순서를 일괄 변경합니다.
+            """
+    )
+    void reorderPlace(
+        @Parameter(example = "2026-01-01") LocalDate date,
+        UserPrincipal principal,
+        @RequestBody(
+            content = @Content(
+                schema = @Schema(implementation = PlaceReorderRequest.class),
+                examples = @ExampleObject(
+                    value = """
+                        {
+                          "placeIds": [2,1]
+                        }
+                        """
+                )
+            )
+        ) PlaceReorderRequest request
+    );
 
 }

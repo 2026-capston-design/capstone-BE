@@ -19,7 +19,7 @@ public class PlaceMapper {
             .build();
     }
 
-    public static PlaceAddResponse toPlaceUploadResponse(Place place) {
+    public static PlaceAddResponse toPlaceAddResponse(Place place) {
         return PlaceAddResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())

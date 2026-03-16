@@ -55,4 +55,7 @@ public class Place {
         this.name = name;
     }
 
+    public void changeOrderIndex(int orderIndex) {
+        this.orderIndex = orderIndex;
+    }
 }

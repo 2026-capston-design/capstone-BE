@@ -11,8 +11,10 @@ import backend.capstone.domain.dayroute.service.DayRouteService;
 import backend.capstone.domain.gpspoint.dto.GpsPointRecordedAtRange;
 import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.gpspoint.service.GpsPointService;
+import backend.capstone.domain.gpspoint.util.PolylineUtil;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import backend.capstone.domain.place.entity.Place;
@@ -64,10 +66,16 @@ public class DayRouteFacade {
         return DayRouteMapper.toGpsPointsResponse(gpsPoints);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public DayRouteDetailResponse getDayRouteDetail(LocalDate date, Long userId) {
         DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
         List<Place> places = placeService.getPlacesByDayRoute(dayRoute);
+
+        if (dayRoute.getEncodedPath() == null) {
+            List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRoute);
+            String encodePath = PolylineUtil.encode(gpsPoints);
+            dayRoute.updateEncodedPath(encodePath, gpsPoints.size());
+        }
 
         return DayRouteMapper.toDayRouteDetailResponse(dayRoute, places);
     }
@@ -86,6 +94,21 @@ public class DayRouteFacade {
         DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
 
         return placeService.updatePlace(dayRoute, placeId, request);
+    }
+
+    @Transactional
+    public void deletePlace(LocalDate date, Long userId, Long placeId) {
+        DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
+
+        placeService.deletePlace(dayRoute, placeId);
+    }
+
+    @Transactional
+    public void reorderPlace(LocalDate date, Long userId,
+        PlaceReorderRequest request) {
+        DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
+
+        placeService.reorderPlace(dayRoute, request);
     }
 
     @Recover
