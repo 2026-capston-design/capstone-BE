@@ -6,10 +6,15 @@ import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadResponse;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.LocalDate;
 
@@ -77,5 +82,27 @@ public interface DayRouteControllerSpec {
         UserPrincipal principal
     );
 
+    @Operation(
+        summary = "장소 순서 재정렬 API",
+        description = """
+            재정렬된 placeId 배열 전체를 받아 해당 날짜의 장소 순서를 일괄 변경합니다.
+            """
+    )
+    void reorderPlace(
+        @Parameter(example = "2026-01-01") LocalDate date,
+        UserPrincipal principal,
+        @RequestBody(
+            content = @Content(
+                schema = @Schema(implementation = PlaceReorderRequest.class),
+                examples = @ExampleObject(
+                    value = """
+                        {
+                          "placeIds": [2,1]
+                        }
+                        """
+                )
+            )
+        ) PlaceReorderRequest request
+    );
 
 }

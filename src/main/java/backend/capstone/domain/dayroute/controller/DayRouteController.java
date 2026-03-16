@@ -7,6 +7,7 @@ import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadResponse;
 import backend.capstone.domain.dayroute.facade.DayRouteFacade;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import jakarta.validation.Valid;
@@ -79,6 +80,7 @@ public class DayRouteController implements DayRouteControllerSpec {
         return dayRouteFacade.updatePlace(date, principal.userId(), placeId, request);
     }
 
+
     @Override
     @DeleteMapping("/{date}/places/{placeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -90,4 +92,14 @@ public class DayRouteController implements DayRouteControllerSpec {
         dayRouteFacade.deletePlace(date, principal.userId(), placeId);
     }
 
+    @Override
+    @PutMapping("/{date}/places:reorder")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void reorderPlace(
+        @PathVariable LocalDate date,
+        @AuthenticationPrincipal UserPrincipal principal,
+        @Valid @RequestBody PlaceReorderRequest request
+    ) {
+        dayRouteFacade.reorderPlace(date, principal.userId(), request);
+    }
 }

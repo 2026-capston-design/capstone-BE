@@ -29,6 +29,7 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
         where p.dayRoute = :dayRoute
           and p.orderIndex > :orderIndex
         """)
-    void decrementOrderIndexesGreaterThan(@Param("dayRoute") DayRoute dayRoute,
+    int decrementOrderIndexesGreaterThan(@Param("dayRoute") DayRoute dayRoute,
         @Param("orderIndex") int orderIndex);
+
 }
