@@ -5,6 +5,7 @@ import backend.capstone.domain.place.entity.Place;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,4 +21,33 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     List<Place> findByDayRouteOrderByOrderIndex(DayRoute dayRoute);
 
     Optional<Place> findByIdAndDayRoute(Long placeId, DayRoute dayRoute);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        update Place p
+        set p.orderIndex = -p.orderIndex
+        where p.dayRoute = :dayRoute
+        """)
+    int negateOrderIndexesByDayRoute(@Param("dayRoute") DayRoute dayRoute);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        update Place p
+        set p.orderIndex = :orderIndex
+        where p.id = :placeId
+          and p.dayRoute = :dayRoute
+        """)
+    int updateOrderIndexByIdAndDayRoute(@Param("placeId") Long placeId,
+        @Param("dayRoute") DayRoute dayRoute,
+        @Param("orderIndex") int orderIndex);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        update Place p
+        set p.orderIndex = p.orderIndex - 1
+        where p.dayRoute = :dayRoute
+          and p.orderIndex > :orderIndex
+        """)
+    int decrementOrderIndexesGreaterThan(@Param("dayRoute") DayRoute dayRoute,
+        @Param("orderIndex") int orderIndex);
 }

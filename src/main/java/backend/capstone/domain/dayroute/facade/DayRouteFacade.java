@@ -14,6 +14,7 @@ import backend.capstone.domain.gpspoint.service.GpsPointService;
 import backend.capstone.domain.gpspoint.util.PolylineUtil;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import backend.capstone.domain.place.entity.Place;
@@ -93,6 +94,20 @@ public class DayRouteFacade {
         DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
 
         return placeService.updatePlace(dayRoute, placeId, request);
+    }
+
+    @Transactional
+    public void deletePlace(LocalDate date, Long userId, Long placeId) {
+        DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
+
+        placeService.deletePlace(dayRoute, placeId);
+    }
+
+    @Transactional
+    public void reorderPlaces(LocalDate date, Long userId, PlaceReorderRequest request) {
+        DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
+
+        placeService.reorderPlaces(dayRoute, request);
     }
 
     @Recover

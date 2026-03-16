@@ -6,6 +6,7 @@ import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadResponse;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,5 +69,23 @@ public interface DayRouteControllerSpec {
         PlaceUpdateRequest request
     );
 
+    @Operation(
+        summary = "장소 삭제 API"
+    )
+    void deletePlace(
+        @Parameter(example = "2026-01-01") LocalDate date,
+        @Parameter(example = "1") Long placeId,
+        UserPrincipal principal
+    );
+
+    @Operation(
+        summary = "장소 순서 변경 API",
+        description = "해당 일차의 placeId 전체를 새로운 순서대로 전달해야 합니다."
+    )
+    void reorderPlaces(
+        @Parameter(example = "2026-01-01") LocalDate date,
+        UserPrincipal principal,
+        PlaceReorderRequest request
+    );
 
 }

@@ -7,12 +7,14 @@ import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadResponse;
 import backend.capstone.domain.dayroute.facade.DayRouteFacade;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,6 +68,7 @@ public class DayRouteController implements DayRouteControllerSpec {
         return dayRouteFacade.addPlaceToDayRoute(date, principal.userId(), request);
     }
 
+    @Override
     @PutMapping("/{date}/places/{placeId}")
     public PlaceUpdateResponse updatePlace(
         @PathVariable LocalDate date,
@@ -74,6 +77,26 @@ public class DayRouteController implements DayRouteControllerSpec {
         @RequestBody PlaceUpdateRequest request
     ) {
         return dayRouteFacade.updatePlace(date, principal.userId(), placeId, request);
+    }
+
+    @Override
+    @DeleteMapping("/{date}/places/{placeId}")
+    public void deletePlace(
+        @PathVariable LocalDate date,
+        @PathVariable Long placeId,
+        @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        dayRouteFacade.deletePlace(date, principal.userId(), placeId);
+    }
+
+    @Override
+    @PutMapping("/{date}/places:reorder")
+    public void reorderPlaces(
+        @PathVariable LocalDate date,
+        @AuthenticationPrincipal UserPrincipal principal,
+        @RequestBody PlaceReorderRequest request
+    ) {
+        dayRouteFacade.reorderPlaces(date, principal.userId(), request);
     }
 
 }
