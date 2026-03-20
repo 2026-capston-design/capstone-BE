@@ -1,6 +1,7 @@
 package backend.capstone.domain.dayroute.controller;
 
 import backend.capstone.auth.dto.UserPrincipal;
+import backend.capstone.domain.dayroute.dto.DayRouteBookmarkResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoRequest;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoResponse;
@@ -38,7 +39,7 @@ public interface DayRouteControllerSpec {
     );
 
     @Operation(
-        summary = "경로 조회 API",
+        summary = "나의 지나온길 조회 API",
         description = "place는 orderIndex를 기준으로 오름차순 정렬되어 반환됩니다."
     )
     DayRouteDetailResponse getDayRouteDetail(
@@ -62,6 +63,14 @@ public interface DayRouteControllerSpec {
         @Parameter(example = "2026-01-01") LocalDate date,
         UserPrincipal principal,
         DayRouteTitleRequest request
+    );
+
+    @Operation(
+        summary = "즐겨찾기 토글 API"
+    )
+    DayRouteBookmarkResponse toggleBookmark(
+        @Parameter(example = "2026-01-01") LocalDate date,
+        UserPrincipal principal
     );
 
     @Operation(
@@ -117,5 +126,4 @@ public interface DayRouteControllerSpec {
             )
         ) PlaceReorderRequest request
     );
-
 }

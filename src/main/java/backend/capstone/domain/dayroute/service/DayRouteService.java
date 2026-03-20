@@ -51,4 +51,9 @@ public class DayRouteService {
         dayRoute.updateMemo(memo);
     }
 
+    @Transactional
+    public boolean toggleBookmark(DayRoute dayRoute) {
+        return dayRoute.toggleBookmarked();
+    }
+
 }

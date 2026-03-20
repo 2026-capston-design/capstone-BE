@@ -91,4 +91,9 @@ public class DayRoute {
     public void updateMemo(String memo) {
         this.memo = memo;
     }
+
+    public boolean toggleBookmarked() {
+        isBookmarked = !isBookmarked;
+        return isBookmarked;
+    }
 }

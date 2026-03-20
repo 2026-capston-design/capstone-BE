@@ -1,6 +1,7 @@
 package backend.capstone.domain.dayroute.facade;
 
 import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
+import backend.capstone.domain.dayroute.dto.DayRouteBookmarkResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoRequest;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteTitleRequest;
@@ -130,6 +131,14 @@ public class DayRouteFacade {
         dayRouteService.updateTitle(dayRoute, request.title());
 
         return new DayRouteTitleResponse(dayRoute.getTitle());
+    }
+
+    @Transactional
+    public DayRouteBookmarkResponse toggleBookmark(LocalDate date, Long userId) {
+        DayRoute dayRoute = dayRouteService.getOrCreate(userId, date);
+        boolean isBookmarked = dayRouteService.toggleBookmark(dayRoute);
+
+        return new DayRouteBookmarkResponse(isBookmarked);
     }
 
     @Recover
