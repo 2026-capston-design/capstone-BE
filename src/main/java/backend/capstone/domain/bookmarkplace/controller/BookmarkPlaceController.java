@@ -1,9 +1,9 @@
-package backend.capstone.domain.pinmarkplace.controller;
+package backend.capstone.domain.bookmarkplace.controller;
 
 import backend.capstone.auth.dto.UserPrincipal;
-import backend.capstone.domain.pinmarkplace.dto.PinmarkPlaceCreateRequest;
-import backend.capstone.domain.pinmarkplace.dto.PinmarkPlaceCreateResponse;
-import backend.capstone.domain.pinmarkplace.service.PinmarkPlaceService;
+import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceCreateRequest;
+import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceCreateResponse;
+import backend.capstone.domain.bookmarkplace.service.BookmarkPlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/pinmark-places")
-public class PinmarkPlaceController implements PinmarkPlaceControllerSpec {
+@RequestMapping("/api/bookmark-places")
+public class BookmarkPlaceController implements BookmarkPlaceControllerSpec {
 
-    private final PinmarkPlaceService pinmarkPlaceService;
+    private final BookmarkPlaceService bookmarkPlaceService;
 
     @Override
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PinmarkPlaceCreateResponse createPinmarkPlace(
+    public BookmarkPlaceCreateResponse createBookmarkPlace(
         @AuthenticationPrincipal UserPrincipal principal,
-        @RequestBody PinmarkPlaceCreateRequest request
+        @RequestBody BookmarkPlaceCreateRequest request
     ) {
-        return pinmarkPlaceService.createPinmarkPlace(principal.userId(), request);
+        return bookmarkPlaceService.createBookmarkPlace(principal.userId(), request);
     }
 }

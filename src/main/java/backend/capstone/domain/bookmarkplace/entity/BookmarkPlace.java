@@ -1,6 +1,5 @@
-package backend.capstone.domain.pinmarkplace.entity;
+package backend.capstone.domain.bookmarkplace.entity;
 
-import backend.capstone.domain.place.entity.PinmarkPlaceType;
 import backend.capstone.domain.user.entity.User;
 import backend.capstone.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
@@ -21,10 +20,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PinmarkPlace extends BaseTimeEntity {
+public class BookmarkPlace extends BaseTimeEntity {
 
     @Id
-    @Column(name = "pinmark_place_id")
+    @Column(name = "bookmark_place_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -33,18 +32,18 @@ public class PinmarkPlace extends BaseTimeEntity {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private PinmarkPlaceType type;
+    private BookmarkPlaceType type;
 
     private String name;
 
     private String roadAddress;
-    
+
     private double latitude;
 
     private double longitude;
 
     @Builder
-    public PinmarkPlace(User user, PinmarkPlaceType type, String name, String roadAddress,
+    public BookmarkPlace(User user, BookmarkPlaceType type, String name, String roadAddress,
         double latitude, double longitude) {
         this.user = user;
         this.type = type;
