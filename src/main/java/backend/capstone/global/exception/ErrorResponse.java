@@ -9,13 +9,20 @@ public record ErrorResponse(
     List<FieldErrorDetail> fieldErrors
 ) {
 
-    public static ErrorResponse of(String code, String message) {
-        return new ErrorResponse(code, message, List.of());
+    public static ErrorResponse of(ErrorCode errorCode) {
+        return new ErrorResponse(
+            errorCode.getCode(),
+            errorCode.getMessage(),
+            List.of()
+        );
     }
 
-    public static ErrorResponse of(String code, String message,
-        List<FieldErrorDetail> fieldErrors) {
-        return new ErrorResponse(code, message, fieldErrors);
+    public static ErrorResponse of(ErrorCode errorCode, List<FieldErrorDetail> fieldErrors) {
+        return new ErrorResponse(
+            errorCode.getCode(),
+            errorCode.getMessage(),
+            fieldErrors
+        );
     }
 
     public record FieldErrorDetail(
@@ -27,6 +34,9 @@ public record ErrorResponse(
             this(error.getField(), error.getDefaultMessage());
         }
 
+        public static FieldErrorDetail of(String field, String reason) {
+            return new FieldErrorDetail(field, reason);
+        }
     }
 
 }

@@ -1,6 +1,7 @@
 package backend.capstone.global.exception;
 
 import backend.capstone.global.exception.ErrorResponse.FieldErrorDetail;
+import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import java.util.List;
@@ -10,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -21,13 +23,9 @@ public class GlobalExceptionHandler {
 
         ErrorCode errorCode = e.getErrorCode();
 
-        String code = (errorCode instanceof Enum)
-            ? ((Enum<?>) errorCode).name()
-            : errorCode.getClass().getSimpleName();
-
         return ResponseEntity
-            .status(e.getErrorCode().getStatus())
-            .body(ErrorResponse.of(code, e.getMessage()));
+            .status(errorCode.getStatus())
+            .body(ErrorResponse.of(errorCode));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -37,43 +35,49 @@ public class GlobalExceptionHandler {
 
         //타입 변환 실패: 예) 날짜 형식 틀림, 숫자 자리에 문자열
         if (cause instanceof InvalidFormatException ex) {
-            String fieldName = ex.getPath().stream()
-                .map(ref -> ref.getFieldName())
-                .reduce((first, second) -> second)
-                .orElse("unknown");
+            String fieldName = extractLastFieldName(ex.getPath());
 
-            String message = String.format(
-                "'%s' 필드의 값 '%s' 이(가) 올바른 형식이 아닙니다. 요청 형식을 확인해주세요.",
-                fieldName,
-                ex.getValue()
-            );
+            Object rejectedValue = ex.getValue();
 
-            return ResponseEntity.badRequest().body(
-                ErrorResponse.of("BAD_REQUEST", message)
-            );
+            return ResponseEntity
+                .status(CommonErrorCode.INVALID_INPUT_FORMAT.getStatus())
+                .body(ErrorResponse.of(
+                        CommonErrorCode.INVALID_INPUT_FORMAT,
+                        List.of(
+                            FieldErrorDetail.of(
+                                fieldName,
+                                String.format("'%s' 값의 형식이 올바르지 않습니다.", rejectedValue)
+                            ))
+                    )
+                );
         }
 
         // JSON 구조 자체가 DTO와 안 맞음
         if (cause instanceof MismatchedInputException ex) {
-            String fieldName = ex.getPath().stream()
-                .map(ref -> ref.getFieldName())
-                .reduce((first, second) -> second)
-                .orElse("unknown");
+            String fieldName = extractLastFieldName(ex.getPath());
 
-            String message = String.format(
-                "'%s' 필드의 입력값 구조가 올바르지 않습니다.",
-                fieldName
-            );
-
-            return ResponseEntity.badRequest().body(
-                ErrorResponse.of("BAD_REQUEST", message)
-            );
+            return ResponseEntity.status(CommonErrorCode.INVALID_JSON_STRUCTURE.getStatus())
+                .body(ErrorResponse.of(CommonErrorCode.INVALID_INPUT_FORMAT,
+                        List.of(
+                            FieldErrorDetail.of(
+                                fieldName,
+                                "입력값 구조가 올바르지 않습니다."
+                            ))
+                    )
+                );
         }
 
         // json 문법 에러 등
-        return ResponseEntity.badRequest().body(
-            ErrorResponse.of("BAD_REQUEST", "요청 JSON 형식이 올바르지 않습니다.")
-        );
+        return ResponseEntity.status(CommonErrorCode.MALFORMED_JSON.getStatus())
+            .body(ErrorResponse.of(CommonErrorCode.MALFORMED_JSON));
+    }
+
+    private String extractLastFieldName(List<Reference> ex) {
+        String fieldName = ex.stream()
+            .map(ref -> ref.getFieldName())
+            .reduce((first, second) -> second)
+            .orElse("unknown");
+        return fieldName;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -85,12 +89,18 @@ public class GlobalExceptionHandler {
             .map(FieldErrorDetail::new)
             .toList();
 
-        return ResponseEntity.badRequest().body(
-            ErrorResponse.of("VALIDATION_ERROR",
-                "요청 값이 올바르지 않습니다.",
-                fieldErrors)
-        );
+        return ResponseEntity.status(CommonErrorCode.VALIDATION_ERROR.getStatus())
+            .body(ErrorResponse.of(CommonErrorCode.VALIDATION_ERROR, fieldErrors));
     }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        String field = e.getName(); // 파라미터 이름
+        String message = String.format("'%s' 값의 형식이 올바르지 않습니다.", field);
 
+        return ResponseEntity.status(CommonErrorCode.INVALID_TYPE.getStatus())
+            .body(ErrorResponse.of(CommonErrorCode.INVALID_TYPE,
+                List.of(FieldErrorDetail.of(field, message))
+            ));
+    }
 }
