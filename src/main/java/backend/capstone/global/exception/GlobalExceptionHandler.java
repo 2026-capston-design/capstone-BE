@@ -1,10 +1,13 @@
 package backend.capstone.global.exception;
 
+import backend.capstone.global.exception.ErrorResponse.FieldErrorDetail;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -24,7 +27,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
             .status(e.getErrorCode().getStatus())
-            .body(new ErrorResponse(code, e.getMessage()));
+            .body(ErrorResponse.of(code, e.getMessage()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
@@ -46,7 +49,7 @@ public class GlobalExceptionHandler {
             );
 
             return ResponseEntity.badRequest().body(
-                new ErrorResponse("BAD_REQUEST", message)
+                ErrorResponse.of("BAD_REQUEST", message)
             );
         }
 
@@ -63,13 +66,29 @@ public class GlobalExceptionHandler {
             );
 
             return ResponseEntity.badRequest().body(
-                new ErrorResponse("BAD_REQUEST", message)
+                ErrorResponse.of("BAD_REQUEST", message)
             );
         }
 
         // json 문법 에러 등
         return ResponseEntity.badRequest().body(
-            new ErrorResponse("BAD_REQUEST", "요청 JSON 형식이 올바르지 않습니다.")
+            ErrorResponse.of("BAD_REQUEST", "요청 JSON 형식이 올바르지 않습니다.")
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(
+        MethodArgumentNotValidException e) {
+        List<FieldErrorDetail> fieldErrors = e.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .map(FieldErrorDetail::new)
+            .toList();
+
+        return ResponseEntity.badRequest().body(
+            ErrorResponse.of("VALIDATION_ERROR",
+                "요청 값이 올바르지 않습니다.",
+                fieldErrors)
         );
     }
 
