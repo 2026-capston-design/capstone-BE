@@ -5,6 +5,7 @@ import backend.capstone.domain.dayroute.dto.DayRouteBookmarkResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoRequest;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoResponse;
+import backend.capstone.domain.dayroute.dto.DayRouteMonthlyResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteTitleRequest;
 import backend.capstone.domain.dayroute.dto.DayRouteTitleResponse;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
@@ -142,4 +143,15 @@ public interface DayRouteControllerSpec {
             )
         ) PlaceReorderRequest request
     );
+
+    @Operation(
+        summary = "월별 나의 지나온길 조회 API",
+        description = """
+            해당 년도, 월의 날짜별 "데이터가 존재하는" 지나온길 데이터들이 반환됩니다.<br>
+            만약 해당 년도, 월에 지나온길 데이터가 존재하지 않다면 빈 배열이 반환됩니다.<br>
+            hasGpsPoints는 해당 날짜의 위치 데이터 존재 여부이고<br>
+            hasManualData는 수기 데이터 존재 여부입니다.
+            """
+    )
+    DayRouteMonthlyResponse getDayRoutesByMonth(int year, int month, UserPrincipal principal);
 }

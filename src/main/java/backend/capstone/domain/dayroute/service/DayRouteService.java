@@ -10,6 +10,8 @@ import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,13 @@ public class DayRouteService {
                             () -> new BusinessException(DayRouteErrorCode.DAY_ROUTE_CREATE_FAILED));
                 }
             });
+    }
+
+    @Transactional(readOnly = true)
+    public List<DayRoute> getDayRoutesByMonth(Long userId, int year, int month) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        return dayRouteRepository.findByUserIdAndDateBetweenOrderByDate(userId,
+            yearMonth.atDay(1), yearMonth.atEndOfMonth());
     }
 
     @Transactional

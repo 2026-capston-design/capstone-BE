@@ -5,6 +5,7 @@ import backend.capstone.domain.dayroute.dto.DayRouteBookmarkResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoRequest;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoResponse;
+import backend.capstone.domain.dayroute.dto.DayRouteMonthlyResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteTitleRequest;
 import backend.capstone.domain.dayroute.dto.DayRouteTitleResponse;
 import backend.capstone.domain.dayroute.dto.GpsPointBatchUploadRequest;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,6 +57,16 @@ public class DayRouteController implements DayRouteControllerSpec {
 //    ) {
 //        return dayRouteFacade.getGpsPoints(date, principal.userId());
 //    }
+
+    @Override
+    @GetMapping
+    public DayRouteMonthlyResponse getDayRoutesByMonth(
+        @RequestParam int year,
+        @RequestParam int month,
+        @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return dayRouteFacade.getDayRoutesByMonth(year, month, principal.userId());
+    }
 
     @Override
     @GetMapping("/{date}")
