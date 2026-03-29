@@ -56,18 +56,26 @@ public interface DayRouteControllerSpec {
     );
 
     @Operation(
-        summary = "메모 작성 API"
+        summary = "메모 작성 및 수정 API",
+        description = """
+            메모는 따로 수정, 삭제 api가 존재하지 않습니다. 이 api의 요청값으로 db의 메모 값이 그대로 덮어써집니다.<br>
+            만약 값으로 null, 빈 문자열(""), 공백 문자열("   ") 등이 들어온다면 삭제로 간주하여 해당 날짜의 메모가 null로 저장됩니다.<br>
+            """
     )
-    DayRouteMemoResponse saveMemo(
+    DayRouteMemoResponse replaceMemo(
         @Parameter(example = "2026-01-01") LocalDate date,
         UserPrincipal principal,
         DayRouteMemoRequest request
     );
 
     @Operation(
-        summary = "제목 작성 API"
+        summary = "제목 작성 및 수정 API",
+        description = """
+            제목은 따로 수정, 삭제 api가 존재하지 않습니다. 이 api의 요청값으로 db의 제목 값이 그대로 덮어써집니다.<br>
+            만약 값으로 null, 빈 문자열(""), 공백 문자열("   ") 등이 들어온다면 삭제로 간주하여 해당 날짜의 제목이 null로 저장됩니다.<br>
+            """
     )
-    DayRouteTitleResponse saveTitle(
+    DayRouteTitleResponse replaceTitle(
         @Parameter(example = "2026-01-01") LocalDate date,
         UserPrincipal principal,
         DayRouteTitleRequest request

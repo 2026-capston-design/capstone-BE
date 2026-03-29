@@ -4,6 +4,7 @@ import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.dayroute.exception.DayRouteErrorCode;
 import backend.capstone.domain.dayroute.mapper.DayRouteMapper;
 import backend.capstone.domain.dayroute.repository.DayRouteRepository;
+import backend.capstone.domain.gpspoint.repository.GpsPointRepository;
 import backend.capstone.domain.place.repository.PlaceRepository;
 import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DayRouteService {
 
     private final DayRouteRepository dayRouteRepository;
+    private final GpsPointRepository gpsPointRepository;
     private final PlaceRepository placeRepository;
     private final UserService userService;
 
@@ -45,14 +47,14 @@ public class DayRouteService {
     }
 
     @Transactional
-    public void updateTitle(DayRoute dayRoute, String title) {
-        dayRoute.updateTitle(title);
+    public void replaceTitle(DayRoute dayRoute, String title) {
+        dayRoute.updateTitle(normalizeNullableText(title));
         refreshHasManualData(dayRoute);
     }
 
     @Transactional
-    public void updateMemo(DayRoute dayRoute, String memo) {
-        dayRoute.updateMemo(memo);
+    public void replaceMemo(DayRoute dayRoute, String memo) {
+        dayRoute.updateMemo(normalizeNullableText(memo));
         refreshHasManualData(dayRoute);
     }
 
@@ -89,5 +91,9 @@ public class DayRouteService {
 
     private boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    private String normalizeNullableText(String value) {
+        return hasText(value) ? value : null;
     }
 }

@@ -109,23 +109,23 @@ public class DayRouteController implements DayRouteControllerSpec {
     }
 
     @Override
-    @PostMapping("/{date}/memo")
-    public DayRouteMemoResponse saveMemo(
+    @PutMapping("/{date}/memo")
+    public DayRouteMemoResponse replaceMemo(
         @PathVariable LocalDate date,
         @AuthenticationPrincipal UserPrincipal principal,
         @RequestBody DayRouteMemoRequest request
     ) {
-        return dayRouteFacade.saveMemo(date, principal.userId(), request);
+        return dayRouteFacade.replaceMemo(date, principal.userId(), request);
     }
 
     @Override
-    @PostMapping("/{date}/title")
-    public DayRouteTitleResponse saveTitle(
+    @PutMapping("/{date}/title")
+    public DayRouteTitleResponse replaceTitle(
         @PathVariable LocalDate date,
         @AuthenticationPrincipal UserPrincipal principal,
         @RequestBody DayRouteTitleRequest request
     ) {
-        return dayRouteFacade.saveTitle(date, principal.userId(), request);
+        return dayRouteFacade.replaceTitle(date, principal.userId(), request);
     }
 
     @Override

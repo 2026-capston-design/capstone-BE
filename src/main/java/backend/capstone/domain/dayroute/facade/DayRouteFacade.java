@@ -125,18 +125,19 @@ public class DayRouteFacade {
     }
 
     @Transactional
-    public DayRouteMemoResponse saveMemo(LocalDate date, Long userId, DayRouteMemoRequest request) {
+    public DayRouteMemoResponse replaceMemo(LocalDate date, Long userId,
+        DayRouteMemoRequest request) {
         DayRoute dayRoute = dayRouteService.getOrCreate(userId, date);
-        dayRouteService.updateMemo(dayRoute, request.memo());
+        dayRouteService.replaceMemo(dayRoute, request.memo());
 
         return new DayRouteMemoResponse(dayRoute.getMemo());
     }
 
     @Transactional
-    public DayRouteTitleResponse saveTitle(LocalDate date, Long userId,
+    public DayRouteTitleResponse replaceTitle(LocalDate date, Long userId,
         DayRouteTitleRequest request) {
         DayRoute dayRoute = dayRouteService.getOrCreate(userId, date);
-        dayRouteService.updateTitle(dayRoute, request.title());
+        dayRouteService.replaceTitle(dayRoute, request.title());
 
         return new DayRouteTitleResponse(dayRoute.getTitle());
     }
