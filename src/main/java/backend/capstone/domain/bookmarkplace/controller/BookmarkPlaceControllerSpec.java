@@ -45,4 +45,15 @@ public interface BookmarkPlaceControllerSpec {
         @Parameter(example = "1") Long bookmarkPlaceId,
         BookmarkPlaceUpdateRequest request
     );
+
+    @Operation(
+        summary = "즐겨찾기 장소 삭제 API",
+        description = """
+            본인의 즐겨찾기 장소만 삭제할 수 있습니다.
+            """
+    )
+    void deleteBookmarkPlace(
+        UserPrincipal principal,
+        @Parameter(example = "1") Long bookmarkPlaceId
+    );
 }

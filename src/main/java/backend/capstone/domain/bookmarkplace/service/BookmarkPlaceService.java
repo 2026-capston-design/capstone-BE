@@ -49,6 +49,16 @@ public class BookmarkPlaceService {
         return BookmarkPlaceMapper.toUpdateResponse(bookmarkPlace);
     }
 
+    @Transactional
+    public void deleteBookmarkPlace(Long userId, Long bookmarkPlaceId) {
+        BookmarkPlace bookmarkPlace = bookmarkPlaceRepository.findByIdAndUserId(bookmarkPlaceId,
+                userId)
+            .orElseThrow(
+                () -> new BusinessException(BookmarkPlaceErrorCode.BOOKMARK_PLACE_NOT_FOUND));
+
+        bookmarkPlaceRepository.delete(bookmarkPlace);
+    }
+
     @Transactional(readOnly = true)
     public BookmarkPlaceListResponse getBookmarkPlaces(Long userId) {
         List<BookmarkPlace> bookmarkPlaces = bookmarkPlaceRepository.findByUserIdOrderByIdAsc(

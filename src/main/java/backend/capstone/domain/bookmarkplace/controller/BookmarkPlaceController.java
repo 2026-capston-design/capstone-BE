@@ -10,6 +10,7 @@ import backend.capstone.domain.bookmarkplace.service.BookmarkPlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,5 +54,15 @@ public class BookmarkPlaceController implements BookmarkPlaceControllerSpec {
     ) {
         return bookmarkPlaceService.updateBookmarkPlace(principal.userId(), bookmarkPlaceId,
             request);
+    }
+
+    @Override
+    @DeleteMapping("/{bookmarkPlaceId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteBookmarkPlace(
+        @AuthenticationPrincipal UserPrincipal principal,
+        @PathVariable Long bookmarkPlaceId
+    ) {
+        bookmarkPlaceService.deleteBookmarkPlace(principal.userId(), bookmarkPlaceId);
     }
 }
