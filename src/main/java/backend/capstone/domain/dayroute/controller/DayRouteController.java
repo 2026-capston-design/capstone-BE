@@ -1,7 +1,6 @@
 package backend.capstone.domain.dayroute.controller;
 
 import backend.capstone.auth.dto.UserPrincipal;
-import backend.capstone.domain.dayroute.dto.DayRouteBookmarkResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteDetailResponse;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoRequest;
 import backend.capstone.domain.dayroute.dto.DayRouteMemoResponse;
@@ -142,14 +141,5 @@ public class DayRouteController implements DayRouteControllerSpec {
         @RequestBody DayRouteTitleRequest request
     ) {
         return dayRouteFacade.replaceTitle(date, principal.userId(), request);
-    }
-
-    @Override
-    @PostMapping("/{date}/bookmark")
-    public DayRouteBookmarkResponse toggleBookmark(
-        @PathVariable LocalDate date,
-        @AuthenticationPrincipal UserPrincipal principal
-    ) {
-        return dayRouteFacade.toggleBookmark(date, principal.userId());
     }
 }
