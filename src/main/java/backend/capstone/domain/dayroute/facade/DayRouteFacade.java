@@ -97,7 +97,7 @@ public class DayRouteFacade {
     @Transactional(readOnly = true)
     public DayRouteMonthlyResponse getDayRoutesByMonth(int year, int month, Long userId) {
         List<DayRoute> dayRoutes = dayRouteService.getDayRoutesByMonth(userId, year, month);
-        return DayRouteMapper.toDayRouteMonthlyResponse(dayRoutes);
+        return DayRouteMapper.toDayRouteMonthlyResponse(year, month, dayRoutes);
     }
 
     @Transactional

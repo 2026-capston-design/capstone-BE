@@ -22,7 +22,11 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Tag(name = "나의 지나온길 API")
 public interface DayRouteControllerSpec {
@@ -38,7 +42,7 @@ public interface DayRouteControllerSpec {
     )
     GpsPointBatchUploadResponse uploadGpsPoints(
         @Parameter(example = "2026-01-01") LocalDate date,
-        GpsPointBatchUploadRequest request,
+        @Valid GpsPointBatchUploadRequest request,
         UserPrincipal principal
     );
 
@@ -122,6 +126,21 @@ public interface DayRouteControllerSpec {
     );
 
     @Operation(
+        summary = "월별 나의 지나온길 조회 API",
+        description = """
+            해당 년도, 월의 날짜별 지나온길 데이터들이 반환됩니다.<br>
+            검색하고자 하는 년도와 월을 쿼리 파라미터로 넣어서 요청해주세요.<br>
+            년도는 2000~3000 사이의 값만 요청할 수 있으며 월은 1~12 사이의 값만 요청할 수 있습니다.<br>
+            해당 날짜의 지나온길 데이터가 존재하지 않는 경우 dayRouteExists 필드에 false가 반환되며 dayRoute 필드 또한 null이 반환됩니다.<br>
+            hasGpsPoints는 해당 날짜의 위치 데이터 존재 여부이고, hasManualData는 수기 데이터 존재 여부입니다.
+            """
+    )
+    DayRouteMonthlyResponse getDayRoutesByMonth(
+        @Parameter(example = "2026") @Min(2000) @Max(3000) int year,
+        @Parameter(example = "1") @Min(1) @Max(12) int month,
+        @AuthenticationPrincipal UserPrincipal principal);
+
+    @Operation(
         summary = "장소 순서 변경 API",
         description = """
             정렬된 placeId 배열 전체를 받아 해당 날짜의 장소 순서를 일괄 변경합니다.
@@ -130,7 +149,7 @@ public interface DayRouteControllerSpec {
     void reorderPlace(
         @Parameter(example = "2026-01-01") LocalDate date,
         UserPrincipal principal,
-        @RequestBody(
+        @Valid @RequestBody(
             content = @Content(
                 schema = @Schema(implementation = PlaceReorderRequest.class),
                 examples = @ExampleObject(
@@ -143,15 +162,4 @@ public interface DayRouteControllerSpec {
             )
         ) PlaceReorderRequest request
     );
-
-    @Operation(
-        summary = "월별 나의 지나온길 조회 API",
-        description = """
-            해당 년도, 월의 날짜별 "데이터가 존재하는" 지나온길 데이터들이 반환됩니다.<br>
-            만약 해당 년도, 월에 지나온길 데이터가 존재하지 않다면 빈 배열이 반환됩니다.<br>
-            hasGpsPoints는 해당 날짜의 위치 데이터 존재 여부이고<br>
-            hasManualData는 수기 데이터 존재 여부입니다.
-            """
-    )
-    DayRouteMonthlyResponse getDayRoutesByMonth(int year, int month, UserPrincipal principal);
 }

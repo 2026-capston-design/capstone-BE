@@ -6,13 +6,23 @@ import lombok.Builder;
 
 @Builder
 public record DayRouteMonthlyResponse(
-    List<DayRouteItem> dayRoutes
+    int year,
+    int month,
+    List<DayItem> days
 ) {
 
     @Builder
-    public record DayRouteItem(
+    public record DayItem(
         LocalDate date,
-        boolean hasGpsPoints,
+        boolean dayRouteExists,
+        DayRouteItem dayRoute
+    ) {
+
+    }
+
+    @Builder
+    public record DayRouteItem(
+        boolean hasLocationData,
         boolean hasManualData,
         boolean isBookmarked
     ) {

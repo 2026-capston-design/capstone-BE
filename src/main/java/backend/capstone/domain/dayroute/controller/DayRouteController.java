@@ -17,10 +17,13 @@ import backend.capstone.domain.place.dto.PlaceReorderRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateRequest;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +36,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/api/day-routes")
 public class DayRouteController implements DayRouteControllerSpec {
@@ -61,8 +65,8 @@ public class DayRouteController implements DayRouteControllerSpec {
     @Override
     @GetMapping
     public DayRouteMonthlyResponse getDayRoutesByMonth(
-        @RequestParam int year,
-        @RequestParam int month,
+        @RequestParam @Min(2000) @Max(3000) int year,
+        @RequestParam @Min(1) @Max(12) int month,
         @AuthenticationPrincipal UserPrincipal principal
     ) {
         return dayRouteFacade.getDayRoutesByMonth(year, month, principal.userId());
