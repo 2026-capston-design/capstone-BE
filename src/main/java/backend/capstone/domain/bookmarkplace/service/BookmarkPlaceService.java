@@ -2,11 +2,13 @@ package backend.capstone.domain.bookmarkplace.service;
 
 import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceCreateRequest;
 import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceCreateResponse;
+import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceListResponse;
 import backend.capstone.domain.bookmarkplace.entity.BookmarkPlace;
 import backend.capstone.domain.bookmarkplace.mapper.BookmarkPlaceMapper;
 import backend.capstone.domain.bookmarkplace.repository.BookmarkPlaceRepository;
 import backend.capstone.domain.user.entity.User;
 import backend.capstone.domain.user.service.UserService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,5 +28,13 @@ public class BookmarkPlaceService {
         BookmarkPlace savedBookmarkPlace = bookmarkPlaceRepository.save(bookmarkPlace);
 
         return BookmarkPlaceMapper.toCreateResponse(savedBookmarkPlace);
+    }
+
+    @Transactional(readOnly = true)
+    public BookmarkPlaceListResponse getBookmarkPlaces(Long userId) {
+        List<BookmarkPlace> bookmarkPlaces = bookmarkPlaceRepository.findByUserIdOrderByIdAsc(
+            userId);
+
+        return BookmarkPlaceMapper.toListResponse(bookmarkPlaces);
     }
 }

@@ -3,10 +3,12 @@ package backend.capstone.domain.bookmarkplace.controller;
 import backend.capstone.auth.dto.UserPrincipal;
 import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceCreateRequest;
 import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceCreateResponse;
+import backend.capstone.domain.bookmarkplace.dto.BookmarkPlaceListResponse;
 import backend.capstone.domain.bookmarkplace.service.BookmarkPlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookmarkPlaceController implements BookmarkPlaceControllerSpec {
 
     private final BookmarkPlaceService bookmarkPlaceService;
+
+    @Override
+    @GetMapping
+    public BookmarkPlaceListResponse getBookmarkPlaces(
+        @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        return bookmarkPlaceService.getBookmarkPlaces(principal.userId());
+    }
 
     @Override
     @PostMapping
