@@ -71,6 +71,10 @@ public class DayRoute {
 
     private boolean hasManualData;
 
+    private boolean analysisNeeded;
+
+    private Long lastAnalyzedGpsPointId;
+
     @Builder
     public DayRoute(User user, LocalDate date) {
         this.user = user;
