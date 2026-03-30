@@ -68,6 +68,7 @@ public class DayRouteFacade {
 
         // 이동거리 업데이트
         dayRouteService.updateDistance(dayRoute, request.distance());
+        dayRoute.markAnalysisNeeded();
 
         return new GpsPointBatchUploadResponse("좌표 업로드에 성공했습니다.");
     }

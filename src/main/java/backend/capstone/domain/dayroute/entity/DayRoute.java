@@ -4,6 +4,8 @@ import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -75,11 +77,15 @@ public class DayRoute {
 
     private Long lastAnalyzedGpsPointId;
 
+    @Enumerated(EnumType.STRING)
+    private AnalysisStatus analysisStatus;
+
     @Builder
     public DayRoute(User user, LocalDate date) {
         this.user = user;
         this.date = date;
         gpsPoints = new ArrayList<>();
+        analysisStatus = AnalysisStatus.IDLE;
     }
 
     public void updateTime(LocalDateTime startTime, LocalDateTime endTime) {
@@ -115,6 +121,10 @@ public class DayRoute {
 
     public void updateDistance(double distance) {
         this.totalDistance = distance;
+    }
+
+    public void markAnalysisNeeded() {
+        this.analysisNeeded = true;
     }
 
 }
