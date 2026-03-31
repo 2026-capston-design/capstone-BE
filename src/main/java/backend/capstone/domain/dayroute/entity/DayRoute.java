@@ -73,12 +73,10 @@ public class DayRoute {
 
     private boolean hasManualData;
 
-    // 분석 flag
+    // stay 분석 flag
     private boolean analysisNeeded;
 
     private Long lastAnalyzedPointId;
-
-    private LocalDateTime lastAnalyzedAt;
 
     @Enumerated(EnumType.STRING)
     private AnalysisStatus analysisStatus;
@@ -142,7 +140,6 @@ public class DayRoute {
 
     public void completeAnalysis(Long pointId) {
         lastAnalyzedPointId = pointId;
-        lastAnalyzedAt = LocalDateTime.now();
         markIdleAnalysis();
     }
 }

@@ -4,7 +4,6 @@ import backend.capstone.domain.dayroute.entity.AnalysisStatus;
 import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.dayroute.service.DayRouteService;
 import backend.capstone.domain.ongoingstay.service.StayAnalysisService;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,11 +18,9 @@ public class StayAnalysisScheduler {
 
     @Scheduled(fixedDelay = 5 * 60 * 1000)
     public void scheduleStayAnalysis() {
-        LocalDateTime threshold = LocalDateTime.now().minusMinutes(15);
-
+        //새 점이 있거나 진행 중인 ongoing stay가 존재하면 분석 후보
         List<DayRoute> targetDayRoute = dayRouteService.getStayAnalysisTargetDayRoute(
-            AnalysisStatus.IDLE,
-            threshold
+            AnalysisStatus.IDLE
         );
 
         for (DayRoute dayRoute : targetDayRoute) {

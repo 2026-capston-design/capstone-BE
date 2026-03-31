@@ -37,11 +37,11 @@ public class OngoingStay extends BaseTimeEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "end_point_id")
-    private GpsPoint endPoint;
+    private GpsPoint lastPoint;
 
     private LocalDateTime startTime;
 
-    private LocalDateTime endTime;
+    private LocalDateTime lastTime;
 
     private double centerLatitude;
 
@@ -55,9 +55,9 @@ public class OngoingStay extends BaseTimeEntity {
         stay.centerLatitude = point.getLatitude();
         stay.centerLongitude = point.getLongitude();
         stay.startPoint = point;
-        stay.endPoint = point;
+        stay.lastPoint = point;
         stay.startTime = point.getRecordedAt();
-        stay.endTime = point.getRecordedAt();
+        stay.lastTime = point.getRecordedAt();
         stay.pointCount = 1;
         return stay;
     }
@@ -72,12 +72,12 @@ public class OngoingStay extends BaseTimeEntity {
                 / (this.pointCount + 1);
 
         this.pointCount++;
-        this.endPoint = point;
-        this.endTime = point.getRecordedAt();
+        this.lastPoint = point;
+        this.lastTime = point.getRecordedAt();
     }
 
     public long getDurationMinutes() {
-        return Duration.between(startTime, endTime).toMinutes();
+        return Duration.between(startTime, lastTime).toMinutes();
     }
 }
 

@@ -5,7 +5,6 @@ import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.dayroute.exception.DayRouteErrorCode;
 import backend.capstone.domain.dayroute.mapper.DayRouteMapper;
 import backend.capstone.domain.dayroute.repository.DayRouteRepository;
-import backend.capstone.domain.gpspoint.repository.GpsPointRepository;
 import backend.capstone.domain.place.repository.PlaceRepository;
 import backend.capstone.domain.user.service.UserService;
 import backend.capstone.global.exception.BusinessException;
@@ -23,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class DayRouteService {
 
     private final DayRouteRepository dayRouteRepository;
-    private final GpsPointRepository gpsPointRepository;
     private final PlaceRepository placeRepository;
     private final UserService userService;
 
@@ -94,9 +92,8 @@ public class DayRouteService {
     }
 
     @Transactional(readOnly = true)
-    public List<DayRoute> getStayAnalysisTargetDayRoute(AnalysisStatus status,
-        LocalDateTime threshold) {
-        return dayRouteRepository.findStayAnalysisTargets(status, threshold);
+    public List<DayRoute> getStayAnalysisTargetDayRoute(AnalysisStatus status) {
+        return dayRouteRepository.findStayAnalysisTargets(status);
     }
 
     private boolean hasManualData(DayRoute dayRoute) {

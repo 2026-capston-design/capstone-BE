@@ -6,6 +6,8 @@ import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.gpspoint.service.GpsPointService;
 import backend.capstone.domain.ongoingstay.entity.OngoingStay;
 import backend.capstone.domain.ongoingstay.repository.OngoingStayRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +37,13 @@ public class StayAnalysisService {
         List<GpsPoint> newPoints = gpsPointService.getNewPoints(dayRoute,
             lastAnalyzedPointId == null ? 0L : lastAnalyzedPointId);
 
-        if (newPoints.isEmpty()) { //새로 분석할 gpsPoint가 없으면 바로 종료
+        if (newPoints.isEmpty()) {
+            if (stay != null) { //새로 분석할 gpsPoint가 없지만 ongoing stay는 남아있다
+                if (Duration.between(stay.getStartTime(), LocalDateTime.now()).toMinutes() >= 10) {
+                    //TODO: place 승격, 장소 조회
+                }
+                ongoingStayRepository.delete(stay);
+            }
             dayRoute.markIdleAnalysis();
             return;
         }
