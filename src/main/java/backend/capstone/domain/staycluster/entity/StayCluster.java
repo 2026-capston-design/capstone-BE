@@ -1,4 +1,4 @@
-package backend.capstone.domain.stayplacecluster.entity;
+package backend.capstone.domain.staycluster.entity;
 
 import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.gpspoint.entity.GpsPoint;
@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,11 +22,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @Getter
-public class StayPlaceCluster extends BaseTimeEntity {
+public class StayCluster extends BaseTimeEntity {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    @Column(name = "stay_place_cluster_id")
+    @Column(name = "stay_cluster_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -48,9 +49,41 @@ public class StayPlaceCluster extends BaseTimeEntity {
 
     private double centerLongitude;
 
+    @Enumerated(EnumType.STRING)
+    private StayClusterStatus status;
+
     private int pointCount;
 
-    @Enumerated(EnumType.STRING)
-    private StayPlaceClusterState state;
+    public static StayCluster start(DayRoute dayRoute, GpsPoint point) {
+        StayCluster stay = new StayCluster();
+        stay.dayRoute = dayRoute;
+        stay.centerLatitude = point.getLatitude();
+        stay.centerLongitude = point.getLongitude();
+        stay.startPoint = point;
+        stay.endPoint = point;
+        stay.startTime = point.getRecordedAt();
+        stay.endTime = point.getRecordedAt();
+        stay.pointCount = 1;
+        stay.status = StayClusterStatus.IN_PROGRESS;
+        return stay;
+    }
 
+    public void addPoint(GpsPoint point) {
+        this.centerLatitude =
+            ((this.centerLatitude * this.pointCount) + point.getLatitude())
+                / (this.pointCount + 1);
+
+        this.centerLongitude =
+            ((this.centerLongitude * this.pointCount) + point.getLongitude())
+                / (this.pointCount + 1);
+
+        this.pointCount++;
+        this.endPoint = point;
+        this.endTime = point.getRecordedAt();
+    }
+
+    public long getDurationMinutes() {
+        return Duration.between(startTime, endTime).toMinutes();
+    }
 }
+

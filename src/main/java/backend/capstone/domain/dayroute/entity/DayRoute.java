@@ -73,9 +73,12 @@ public class DayRoute {
 
     private boolean hasManualData;
 
+    // 분석 flag
     private boolean analysisNeeded;
 
-    private Long lastAnalyzedGpsPointId;
+    private Long lastAnalyzedPointId;
+
+    private LocalDateTime lastAnalyzedAt;
 
     @Enumerated(EnumType.STRING)
     private AnalysisStatus analysisStatus;
@@ -123,8 +126,23 @@ public class DayRoute {
         this.totalDistance = distance;
     }
 
+    // 분석용 업데이트
     public void markAnalysisNeeded() {
         this.analysisNeeded = true;
     }
 
+    public void markInProgressAnalysis() {
+        this.analysisStatus = AnalysisStatus.IN_PROGRESS;
+    }
+
+    public void markIdleAnalysis() {
+        this.analysisNeeded = false;
+        this.analysisStatus = AnalysisStatus.IDLE;
+    }
+
+    public void completeAnalysis(Long pointId) {
+        lastAnalyzedPointId = pointId;
+        lastAnalyzedAt = LocalDateTime.now();
+        markIdleAnalysis();
+    }
 }

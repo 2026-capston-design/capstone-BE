@@ -29,4 +29,5 @@ public interface GpsPointRepository extends
         """)
     List<GpsPoint> findByDayRouteIdOrderByRecordedAt(@Param("dayRoute") DayRoute dayRoute);
 
+    List<GpsPoint> findByDayRouteAndIdGreaterThanOrderByIdAsc(DayRoute dayRoute, Long lastPointId);
 }

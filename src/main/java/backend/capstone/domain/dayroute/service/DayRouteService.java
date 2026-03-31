@@ -1,5 +1,6 @@
 package backend.capstone.domain.dayroute.service;
 
+import backend.capstone.domain.dayroute.entity.AnalysisStatus;
 import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.dayroute.exception.DayRouteErrorCode;
 import backend.capstone.domain.dayroute.mapper.DayRouteMapper;
@@ -90,6 +91,12 @@ public class DayRouteService {
     @Transactional
     public void refreshHasManualData(DayRoute dayRoute) {
         dayRoute.updateHasManualData(hasManualData(dayRoute));
+    }
+
+    @Transactional(readOnly = true)
+    public List<DayRoute> getStayAnalysisTargetDayRoute(AnalysisStatus status,
+        LocalDateTime threshold) {
+        return dayRouteRepository.findStayAnalysisTargets(status, threshold);
     }
 
     private boolean hasManualData(DayRoute dayRoute) {

@@ -49,4 +49,9 @@ public class GpsPointService {
         return gpsPointRepository.findByDayRouteIdOrderByRecordedAt(dayRoute);
     }
 
+    @Transactional(readOnly = true)
+    public List<GpsPoint> getNewPoints(DayRoute dayRoute, Long lastPointId) {
+        return gpsPointRepository.findByDayRouteAndIdGreaterThanOrderByIdAsc(dayRoute, lastPointId);
+    }
+
 }
