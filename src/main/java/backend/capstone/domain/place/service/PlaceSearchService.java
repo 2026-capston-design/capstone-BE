@@ -21,26 +21,32 @@ public class PlaceSearchService {
     private static final int DEFAULT_SIZE = 15;
 
     //TODO: 카테고리 가중치 고려
-    private static final List<String> ALL_CATEGORY_GROUP_CODES = List.of(
-        "MT1", // 대형마트
-        "CS2", // 편의점
-        "PS3", // 어린이집, 유치원
+    /**
+     * 1차 탐색 카테고리 앱 취지상 "의미있는 장소"일 가능성이 높은 카테고리
+     */
+    private static final List<String> PRIMARY_CATEGORY_GROUP_CODES = List.of(
         "SC4", // 학교
         "AC5", // 학원
-        "PK6", // 주차장
-        "OL7", // 주유소, 충전소
-        "SW8", // 지하철역
-        "BK9", // 은행
         "CT1", // 문화시설
-        "AG2", // 중개업소
-        "PO3", // 공공기관
         "AT4", // 관광명소
         "AD5", // 숙박
         "FD6", // 음식점
         "CE7", // 카페
-        "HP8", // 병원
-        "PM9"  // 약국
+        "HP8" // 병원
     );
+
+    /**
+     * 2차 확장 카테고리 1차 탐색에서 아무 후보도 없을 때만 추가 탐색
+     */
+    private static final List<String> SECONDARY_CATEGORY_GROUP_CODES = List.of(
+        "MT1", // 대형마트
+        "CS2", // 편의점
+        "BK9", // 은행
+        "PO3", // 공공기관
+        "PM9",  // 약국
+        "OL7"  // 주유소, 충전소
+    );
+
 
     private final WebClient kakaoLocalWebClient;
 
@@ -66,9 +72,27 @@ public class PlaceSearchService {
         double latitude,
         double longitude
     ) {
+        // 1차 카테고리부터 우선 탐색
+        Optional<KakaoCategorySearchResponse.Document> primaryBestPoi =
+            findBestPoiByCategories(latitude, longitude, PRIMARY_CATEGORY_GROUP_CODES);
+
+        if (primaryBestPoi.isPresent()) {
+            return primaryBestPoi;
+        }
+
+        // 1차에서 후보가 없을 때만 2차 카테고리 탐색
+        return findBestPoiByCategories(latitude, longitude, SECONDARY_CATEGORY_GROUP_CODES);
+    }
+
+    //거리+카테고리 기반으로 최적의 poi를 반환하는 함수
+    private Optional<KakaoCategorySearchResponse.Document> findBestPoiByCategories(
+        double latitude,
+        double longitude,
+        List<String> categoryGroupCodes
+    ) {
         Map<String, Document> uniqueCandidates = new LinkedHashMap<>();
 
-        for (String categoryGroupCode : ALL_CATEGORY_GROUP_CODES) {
+        for (String categoryGroupCode : categoryGroupCodes) {
             KakaoCategorySearchResponse response = kakaoLocalWebClient.get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/v2/local/search/category.json")
@@ -92,7 +116,7 @@ public class PlaceSearchService {
                 if (emptyToNull(doc.place_name()) == null) {
                     continue;
                 }
-                
+
                 // 같은 장소가 여러 카테고리 탐색 과정에서 중복 수집될 수 있으므로 id 기준 dedupe
                 uniqueCandidates.putIfAbsent(doc.id(), doc);
             }
@@ -103,7 +127,6 @@ public class PlaceSearchService {
 
         return uniqueCandidates.values().stream()
             .min(Comparator.comparingInt(this::distanceOnlyScore));
-
     }
 
     /**
