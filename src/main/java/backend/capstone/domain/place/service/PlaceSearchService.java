@@ -46,7 +46,6 @@ public class PlaceSearchService {
         "OL7"  // 주유소, 충전소
     );
 
-
     private final WebClient kakaoLocalWebClient;
 
     public Optional<PlaceSearchResult> searchByCoordinate(double latitude, double longitude) {
@@ -162,7 +161,6 @@ public class PlaceSearchService {
         };
     }
 
-
     private Integer parseInteger(String value) {
         try {
             return value == null || value.isBlank() ? null : Integer.parseInt(value);
@@ -183,8 +181,45 @@ public class PlaceSearchService {
         return (value == null || value.isBlank()) ? null : value;
     }
 
-    //TODO: 건물명, 도로명 주소, 지번주소 등등 여러 후보 중에서 어떤걸 장소명으로 쓸지 기준 세우기
-    //TODO: 건물명이 없다면 가까운 건물명이라도 어떻게 조회해올 수 없나
+    /**
+     * 적절한 POI가 없을 때 중심좌표 기반 주소 fallback
+     */
+    private Optional<PlaceSearchResult> searchAddressFallback(double latitude, double longitude) {
+        KakaoCoord2AddressResponse response = kakaoLocalWebClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/v2/local/geo/coord2address.json")
+                .queryParam("x", longitude)
+                .queryParam("y", latitude)
+                .queryParam("input_coord", "WGS84")
+                .build())
+            .retrieve()
+            .bodyToMono(KakaoCoord2AddressResponse.class)
+            .block();
+
+        if (response == null || response.documents() == null || response.documents().isEmpty()) {
+            return Optional.empty();
+        }
+
+        KakaoCoord2AddressResponse.Document doc = response.documents().getFirst();
+
+        String placeName = extractPlaceName(doc);
+        String roadAddress = extractRoadAddress(doc);
+        String jibunAddress = extractJibunAddress(doc);
+
+        Double resolvedLatitude = extractAddressLatitude(doc);
+        Double resolvedLongitude = extractAddressLongitude(doc);
+
+        return Optional.of(
+            PlaceSearchResult.builder()
+                .name(placeName)
+                .roadAddress(roadAddress)
+                .jibunAddress(jibunAddress)
+                .latitude(resolvedLatitude != null ? resolvedLatitude : latitude)
+                .longitude(resolvedLongitude != null ? resolvedLongitude : longitude)
+                .build()
+        );
+    }
+
     private String extractPlaceName(KakaoCoord2AddressResponse.Document document) {
         if (document.road_address() != null) {
             String buildingName = document.road_address().building_name();
@@ -205,7 +240,7 @@ public class PlaceSearchService {
             }
         }
 
-        return "알 수 없는 장소";
+        return null;
     }
 
     private String extractRoadAddress(KakaoCoord2AddressResponse.Document document) {
@@ -218,6 +253,54 @@ public class PlaceSearchService {
 
         if (document.address() != null) {
             return document.address().address_name();
+        }
+
+        return null;
+    }
+
+    private String extractJibunAddress(KakaoCoord2AddressResponse.Document document) {
+        if (document != null && document.address() != null) {
+            String addressName = document.address().address_name();
+            if (addressName != null && !addressName.isBlank()) {
+                return addressName;
+            }
+        }
+        return null;
+    }
+
+    private Double extractAddressLatitude(KakaoCoord2AddressResponse.Document document) {
+        if (document == null) {
+            return null;
+        }
+
+        if (document.road_address() != null) {
+            Double y = parseDouble(document.road_address().y());
+            if (y != null) {
+                return y;
+            }
+        }
+
+        if (document.address() != null) {
+            return parseDouble(document.address().y());
+        }
+
+        return null;
+    }
+
+    private Double extractAddressLongitude(KakaoCoord2AddressResponse.Document document) {
+        if (document == null) {
+            return null;
+        }
+
+        if (document.road_address() != null) {
+            Double x = parseDouble(document.road_address().x());
+            if (x != null) {
+                return x;
+            }
+        }
+
+        if (document.address() != null) {
+            return parseDouble(document.address().x());
         }
 
         return null;

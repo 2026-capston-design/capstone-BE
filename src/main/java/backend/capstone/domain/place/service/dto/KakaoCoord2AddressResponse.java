@@ -22,13 +22,17 @@ public record KakaoCoord2AddressResponse(
 
     public record RoadAddress(
         String address_name,
-        String building_name
+        String building_name,
+        String x,
+        String y
     ) {
 
     }
 
     public record Address(
-        String address_name
+        String address_name,
+        String x,
+        String y
     ) {
 
     }
