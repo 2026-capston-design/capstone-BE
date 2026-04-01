@@ -1,4 +1,4 @@
-package backend.capstone.domain.place.service.dto;
+package backend.capstone.domain.ongoingstay.service.dto;
 
 import java.util.List;
 
