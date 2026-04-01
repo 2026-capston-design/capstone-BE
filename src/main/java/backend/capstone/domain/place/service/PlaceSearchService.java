@@ -20,7 +20,6 @@ public class PlaceSearchService {
     private static final int DEFAULT_RADIUS_METER = 100;
     private static final int DEFAULT_SIZE = 15;
 
-    //TODO: 카테고리 가중치 고려
     /**
      * 1차 탐색 카테고리 앱 취지상 "의미있는 장소"일 가능성이 높은 카테고리
      */
@@ -126,16 +125,43 @@ public class PlaceSearchService {
         }
 
         return uniqueCandidates.values().stream()
-            .min(Comparator.comparingInt(this::distanceOnlyScore));
+            .min(Comparator.comparingInt(this::score));
     }
 
     /**
-     * 최적 후보 선정 기준: 오직 거리
+     * 최적 후보 선정 기준: 거리+카테고리별 가중치
      */
-    private int distanceOnlyScore(KakaoCategorySearchResponse.Document doc) {
+    private int score(KakaoCategorySearchResponse.Document doc) {
         Integer distance = parseInteger(doc.distance()); //distance는 좌표와 장소 간의 직선거리(m)
-        return distance != null ? distance : Integer.MAX_VALUE;
+        if (distance == null) {
+            return Integer.MAX_VALUE;
+        }
+
+        int score = distance;
+        String categoryGroupCode = emptyToNull(doc.category_group_code());
+        score += categoryWeight(categoryGroupCode);
+
+        return score;
     }
+
+    private int categoryWeight(String categoryGroupCode) {
+        if (categoryGroupCode == null) {
+            return 0;
+        }
+
+        return switch (categoryGroupCode) {
+            case "SC4" -> -18; // 학교 (최우선)
+            case "AC5" -> -16; // 학원
+            case "CT1" -> -10; // 문화시설
+            case "AT4" -> -10; // 관광명소
+            case "AD5" -> -8;  // 숙박
+            case "FD6" -> -7;  // 음식점
+            case "CE7" -> -7;  // 카페
+            case "HP8" -> -5;  // 병원
+            default -> 0;
+        };
+    }
+
 
     private Integer parseInteger(String value) {
         try {
