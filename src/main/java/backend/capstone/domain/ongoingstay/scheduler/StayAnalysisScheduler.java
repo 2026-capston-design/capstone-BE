@@ -24,7 +24,7 @@ public class StayAnalysisScheduler {
         );
 
         for (DayRoute dayRoute : targetDayRoute) {
-            stayAnalysisService.analyzeStay(dayRoute);
+            stayAnalysisService.analyzeStay(dayRoute.getId());
         }
     }
 }

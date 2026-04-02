@@ -14,11 +14,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientException;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class StayAnalysisService {
 
     private static final int STAY_RADIUS_METER = 50;
@@ -31,7 +34,8 @@ public class StayAnalysisService {
     private final PlaceSearchService placeSearchService;
 
     @Transactional
-    public void analyzeStay(DayRoute dayRoute) {
+    public void analyzeStay(Long dayRouteId) {
+        DayRoute dayRoute = dayRouteService.getDayRouteById(dayRouteId);
         // 이미 분석이 진행 중인 경우, 중복 분석 방지
         if (dayRoute.getAnalysisStatus() == AnalysisStatus.IN_PROGRESS) {
             return;
@@ -85,8 +89,15 @@ public class StayAnalysisService {
     }
 
     public void promoteStayToPlace(DayRoute dayRoute, double stayLatitude, double stayLongitude) {
-        Optional<PlaceSearchResult> searchResult =
-            placeSearchService.searchByCoordinate(stayLatitude, stayLongitude);
+        Optional<PlaceSearchResult> searchResult = Optional.empty();
+
+        try {
+            searchResult = placeSearchService.searchByCoordinate(stayLatitude, stayLongitude);
+        } catch (WebClientException e) {
+            log.error(
+                "카카오 플레이스 조회에 실패. 알 수 없는 place로 저장. dayRouteId={}, lat={}, lon={}",
+                dayRoute.getId(), stayLatitude, stayLongitude, e);
+        }
 
         placeService.saveAutoPlace(dayRoute, stayLatitude, stayLongitude, searchResult);
     }

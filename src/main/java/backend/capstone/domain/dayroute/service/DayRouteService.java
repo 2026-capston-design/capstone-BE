@@ -32,6 +32,12 @@ public class DayRouteService {
             .orElseThrow(() -> new BusinessException(DayRouteErrorCode.DAY_ROUTE_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
+    public DayRoute getDayRouteById(Long dayRouteId) {
+        return dayRouteRepository.findById(dayRouteId)
+            .orElseThrow(() -> new BusinessException(DayRouteErrorCode.DAY_ROUTE_NOT_FOUND));
+    }
+
     @Transactional
     public DayRoute getOrCreate(Long userId, LocalDate date) {
         return dayRouteRepository.findByUserIdAndDate(userId, date)
