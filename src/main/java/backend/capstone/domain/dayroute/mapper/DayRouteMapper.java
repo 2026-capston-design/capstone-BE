@@ -49,6 +49,7 @@ public class DayRouteMapper {
             .isBookmarked(dayRoute.isBookmarked())
             .encodedPath(dayRoute.getEncodedPath())
             .pathPointCount(dayRoute.getPathPointCount())
+            .placeCount(places.size())
             .places(places.stream()
                 .map(PlaceMapper::toPlaceItem)
                 .toList())
