@@ -42,7 +42,8 @@ public class PlaceSearchService {
         "BK9", // 은행
         "PO3", // 공공기관
         "PM9",  // 약국
-        "OL7"  // 주유소, 충전소
+        "OL7",  // 주유소, 충전소
+        "SW8" //지하철역
     );
 
     private final WebClient kakaoLocalWebClient;
