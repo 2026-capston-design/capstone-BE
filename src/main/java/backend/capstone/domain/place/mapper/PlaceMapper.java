@@ -4,9 +4,12 @@ import backend.capstone.domain.dayroute.entity.DayRoute;
 import backend.capstone.domain.ongoingstay.service.dto.PlaceSearchResult;
 import backend.capstone.domain.place.dto.PlaceAddRequest;
 import backend.capstone.domain.place.dto.PlaceAddResponse;
+import backend.capstone.domain.place.dto.PlaceItem;
+import backend.capstone.domain.place.dto.PlaceListResponse;
 import backend.capstone.domain.place.dto.PlaceUpdateResponse;
 import backend.capstone.domain.place.entity.Place;
 import backend.capstone.domain.place.entity.PlaceSource;
+import java.util.List;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = lombok.AccessLevel.PRIVATE)
@@ -33,6 +36,29 @@ public class PlaceMapper {
             .latitude(place.getLatitude())
             .longitude(place.getLongitude())
             .orderIndex(place.getOrderIndex())
+            .build();
+    }
+
+    public static PlaceItem toPlaceItem(Place place) {
+        return PlaceItem.builder()
+            .placeId(place.getId())
+            .placeName(place.getName())
+            .type(place.getSource())
+            .roadAddress(place.getRoadAddress())
+            .latitude(place.getLatitude())
+            .longitude(place.getLongitude())
+            .orderIndex(place.getOrderIndex())
+            .build();
+    }
+
+    public static PlaceListResponse toPlaceListResponse(List<Place> places) {
+        List<PlaceItem> items = places.stream()
+            .map(PlaceMapper::toPlaceItem)
+            .toList();
+
+        return PlaceListResponse.builder()
+            .placeCount(items.size())
+            .places(items)
             .build();
     }
 
