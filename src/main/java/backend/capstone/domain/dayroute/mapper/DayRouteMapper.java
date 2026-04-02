@@ -74,8 +74,8 @@ public class DayRouteMapper {
                         .dayRouteExists(dayRoute != null)
                         .dayRoute(dayRoute == null ? null
                             : DayRouteMonthlyResponse.DayRouteItem.builder()
-                                .hasLocationData(dayRoute.isHasGpsPoints())
-                                .hasManualData(dayRoute.isHasManualData())
+                                .hasPolyline(dayRoute.isHasPolyline())
+                                .hasDetails(dayRoute.isHasDetails())
                                 .isBookmarked(dayRoute.isBookmarked())
                                 .build())
                         .build();

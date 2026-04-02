@@ -86,7 +86,7 @@ public class DayRouteFacade {
         DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
         List<Place> places = placeService.getPlacesByDayRoute(dayRoute);
 
-        if (dayRoute.isHasGpsPoints() && dayRoute.getEncodedPath() == null) {
+        if (dayRoute.isHasPolyline() && dayRoute.getEncodedPath() == null) {
             List<GpsPoint> gpsPoints = gpsPointService.getGpsPointsByDayRouteId(dayRoute);
             String encodePath = PolylineUtil.encode(gpsPoints);
             dayRoute.updateEncodedPath(encodePath, gpsPoints.size());

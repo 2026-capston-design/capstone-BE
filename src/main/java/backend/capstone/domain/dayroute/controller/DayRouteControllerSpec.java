@@ -83,7 +83,7 @@ public interface DayRouteControllerSpec {
             검색하고자 하는 년도와 월을 쿼리 파라미터로 넣어서 요청해주세요.<br>
             년도는 2000~3000 사이의 값만 요청할 수 있으며 월은 1~12 사이의 값만 요청할 수 있습니다.<br>
             해당 날짜의 지나온길 데이터가 존재하지 않는 경우 dayRouteExists 필드에 false가 반환되며 dayRoute 필드 또한 null이 반환됩니다.<br>
-            hasGpsPoints는 해당 날짜의 위치 데이터 존재 여부이고, hasManualData는 수기 데이터 존재 여부입니다.
+            hasPolyline은 해당 날짜의 경로 데이터 존재 여부이고, hasDetails는 세부 데이터 존재 여부입니다.
             """
     )
     DayRouteMonthlyResponse getDayRoutesByMonth(

@@ -69,9 +69,9 @@ public class DayRoute {
 
     private Integer pathPointCount;
 
-    private boolean hasGpsPoints;
+    private boolean hasPolyline;
 
-    private boolean hasManualData;
+    private boolean hasDetails;
 
     // stay 분석 flag
     private boolean analysisNeeded;
@@ -108,11 +108,11 @@ public class DayRoute {
     }
 
     public void markHasGpsPoints() {
-        this.hasGpsPoints = true;
+        this.hasPolyline = true;
     }
 
     public void updateHasManualData(boolean hasManualData) {
-        this.hasManualData = hasManualData;
+        this.hasDetails = hasManualData;
     }
 
     public boolean toggleBookmarked() {
