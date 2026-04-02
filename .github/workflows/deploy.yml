@@ -60,6 +60,7 @@ jobs:
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           REDIS_HOST=${{ secrets.REDIS_HOST }}
           REDIS_PORT=${{ secrets.REDIS_PORT }}
+          KAKAO_REST_API_KEY=${{ secrets.KAKAO_REST_API_KEY }}
           EOF
 
       # EC2로 .env 업로드
