@@ -24,7 +24,10 @@ public interface PlaceControllerSpec {
         summary = "방문 장소 목록 조회 API",
         description = """
             해당 날짜의 방문 장소 목록을 조회합니다.<br>
-            장소 목록은 orderIndex 오름차순으로 반환됩니다.
+            장소 목록은 orderIndex 오름차순으로 반환됩니다.<br>
+            tpe 필드는 장소 생성 유형을 나타냅니다.<br>
+             - AUTO: 자동 생성된 장소 (GPS 기반)<br>
+             - MANUAL: 사용자가 직접 추가한 장소
             """
     )
     PlaceListResponse getPlaces(
@@ -45,7 +48,7 @@ public interface PlaceControllerSpec {
         summary = "방문 장소 수정 API",
         description = """
             수정하지 않는 필드도 함께 요청값으로 전달해야 합니다.<br>
-            PUT 요청으로 장소 정보를 전체 교체합니다.
+            PUT 요청으로 장소 정보를 전체 교체합니다.<br>
             """
     )
     PlaceUpdateResponse updatePlace(
