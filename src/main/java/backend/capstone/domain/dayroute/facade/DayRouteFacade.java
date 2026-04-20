@@ -16,12 +16,6 @@ import backend.capstone.domain.dayroute.service.DayRouteService;
 import backend.capstone.domain.gpspoint.dto.GpsPointRecordedAtRange;
 import backend.capstone.domain.gpspoint.entity.GpsPoint;
 import backend.capstone.domain.gpspoint.service.GpsPointService;
-import backend.capstone.domain.place.dto.PlaceAddRequest;
-import backend.capstone.domain.place.dto.PlaceAddResponse;
-import backend.capstone.domain.place.dto.PlaceReorderRequest;
-import backend.capstone.domain.place.dto.PlaceUpdateRequest;
-import backend.capstone.domain.place.dto.PlaceUpdateResponse;
-import backend.capstone.domain.place.service.PlaceService;
 import backend.capstone.global.exception.BusinessException;
 import java.time.LocalDate;
 import java.util.List;
@@ -39,7 +33,6 @@ public class DayRouteFacade {
 
     private final DayRouteService dayRouteService;
     private final GpsPointService gpsPointService;
-    private final PlaceService placeService;
 
     @Retryable(
         retryFor = {
@@ -88,37 +81,6 @@ public class DayRouteFacade {
     public DayRouteMonthlyResponse getDayRoutesByMonth(int year, int month, Long userId) {
         List<DayRoute> dayRoutes = dayRouteService.getDayRoutesByMonth(userId, year, month);
         return DayRouteMapper.toDayRouteMonthlyResponse(year, month, dayRoutes);
-    }
-
-    @Transactional
-    public PlaceAddResponse addPlaceToDayRoute(LocalDate date, Long userId,
-        PlaceAddRequest request) {
-        DayRoute dayRoute = dayRouteService.getOrCreate(userId, date);
-
-        return placeService.addPlace(dayRoute, request);
-    }
-
-    @Transactional
-    public PlaceUpdateResponse updatePlace(LocalDate date, Long userId,
-        Long placeId, PlaceUpdateRequest request) {
-        DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
-
-        return placeService.updatePlace(dayRoute, placeId, request);
-    }
-
-    @Transactional
-    public void deletePlace(LocalDate date, Long userId, Long placeId) {
-        DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
-
-        placeService.deletePlace(dayRoute, placeId);
-    }
-
-    @Transactional
-    public void reorderPlace(LocalDate date, Long userId,
-        PlaceReorderRequest request) {
-        DayRoute dayRoute = dayRouteService.getDayRouteByDateAndUserId(date, userId);
-
-        placeService.reorderPlace(dayRoute, request);
     }
 
     @Transactional
